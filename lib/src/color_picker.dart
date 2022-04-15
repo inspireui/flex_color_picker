@@ -1650,7 +1650,10 @@ class _ColorPickerState extends State<ColorPicker> {
                   activeSwatch: _activeSwatch!,
                   selectedColor: _selectedColor.withAlpha(0xFF),
                   onSelectColor: (Color color) {
-                    _onSelectColor(color);
+                    _onSelectColor(
+                      color,
+                      keepOpacity: _activePicker == ColorPickerType.wheel,
+                    );
                     if (_activePicker == ColorPickerType.wheel) {
                       setState(() {
                         _selectedShouldFocus = true;
