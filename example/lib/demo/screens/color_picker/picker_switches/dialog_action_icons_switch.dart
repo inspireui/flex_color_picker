@@ -6,7 +6,7 @@ import '../../../widgets/switch_tile_tooltip.dart';
 
 @immutable
 class DialogActionIconsSwitch extends ConsumerWidget {
-  const DialogActionIconsSwitch({Key? key}) : super(key: key);
+  const DialogActionIconsSwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,8 +15,8 @@ class DialogActionIconsSwitch extends ConsumerWidget {
       subtitle: const Text('Use API to also customize button and icon.'),
       value: ref.watch(dialogActionIconsPod),
       onChanged: (bool value) =>
-          ref.read(dialogActionIconsPod.state).state = value,
-      tooltipEnabled: ref.watch(dialogActionIconsPod),
+          ref.read(dialogActionIconsPod.notifier).state = value,
+      tooltipEnabled: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(actionButtons:\n'
           '  ColorPickerActionButtons(dialogActionIcons: '
           '${ref.read(dialogActionIconsPod)}))',

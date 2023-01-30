@@ -17,21 +17,21 @@ Future<bool> colorPickerDialog(
         ? ref.watch(cardPickerColorPod)
         : ref.watch(dialogPickerColorPod),
     onColorChangeStart: (Color color) {
-      ref.read(onColorChangeStartPod.state).state = color;
+      ref.read(onColorChangeStartPod.notifier).state = color;
     },
     onColorChanged: (Color color) {
       cardRemote
-          ? ref.read(cardPickerColorPod.state).state = color
-          : ref.read(dialogPickerColorPod.state).state = color;
-      ref.read(onColorChangedPod.state).state = color;
+          ? ref.read(cardPickerColorPod.notifier).state = color
+          : ref.read(dialogPickerColorPod.notifier).state = color;
+      ref.read(onColorChangedPod.notifier).state = color;
     },
     onColorChangeEnd: (Color color) {
-      ref.read(onColorChangeEndPod.state).state = color;
+      ref.read(onColorChangeEndPod.notifier).state = color;
     },
     onRecentColorsChanged: (List<Color> colors) {
       cardRemote
-          ? ref.read(cardRecentColorsPod.state).state = colors
-          : ref.read(dialogRecentColorsPod.state).state = colors;
+          ? ref.read(cardRecentColorsPod.notifier).state = colors
+          : ref.read(dialogRecentColorsPod.notifier).state = colors;
     },
     crossAxisAlignment: ref.watch(alignmentPod),
     padding: EdgeInsets.all(ref.watch(paddingPod)),
@@ -45,6 +45,7 @@ Future<bool> colorPickerDialog(
     copyPasteBehavior: ColorPickerCopyPasteBehavior(
       ctrlC: ref.watch(ctrlCPod),
       ctrlV: ref.watch(ctrlVPod),
+      autoFocus: ref.watch(autoFocusPod),
       copyButton: ref.watch(copyButtonPod),
       pasteButton: ref.watch(pasteButtonPod),
       copyFormat: ref.watch(copyFormatPod),
@@ -66,6 +67,7 @@ Future<bool> colorPickerDialog(
       closeButton: ref.watch(closeButtonPod),
       closeIsLast: ref.watch(closeIsLastPod),
       dialogActionButtons: ref.watch(dialogActionButtonsPod),
+      dialogActionOrder: ref.watch(dialogActionsOrderPod),
       dialogActionIcons: ref.watch(dialogActionIconsPod),
       dialogOkButtonType: ColorPickerActionButtonType.outlined,
       dialogCancelButtonType: ColorPickerActionButtonType.text,
@@ -81,49 +83,51 @@ Future<bool> colorPickerDialog(
     wheelDiameter: ref.watch(wheelDiameterPod),
     wheelWidth: ref.watch(wheelWidthPod),
     wheelHasBorder: ref.watch(wheelHasBorderPod),
+    wheelSquarePadding: ref.watch(wheelSquarePaddingPod),
+    wheelSquareBorderRadius: ref.watch(wheelSquareBorderRadiusPod),
     enableTooltips: ref.watch(enableTooltipsPod),
     pickersEnabled: ref.watch(pickersEnabledPod),
     selectedPickerTypeColor: colorScheme.primary,
     title: ref.watch(showTitlePod)
         ? Text(
             'ColorPicker',
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           )
         : null,
     heading: ref.watch(showHeadingPod)
         ? Text(
             'Select color',
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           )
         : null,
     subheading: ref.watch(showSubheadingPod)
         ? Text(
             'Select color shade',
-            style: Theme.of(context).textTheme.subtitle1,
+            style: Theme.of(context).textTheme.titleMedium,
           )
         : null,
     tonalSubheading: ref.watch(showTonalSubheadingPod)
         ? Text(
             'Material 3 tonal palette',
-            style: Theme.of(context).textTheme.subtitle1,
+            style: Theme.of(context).textTheme.titleMedium,
           )
         : null,
     wheelSubheading: ref.watch(showSubheadingPod)
         ? Text(
             'Selected color and its color swatch',
-            style: Theme.of(context).textTheme.subtitle1,
+            style: Theme.of(context).textTheme.titleMedium,
           )
         : null,
     opacitySubheading: ref.watch(showOpacitySubheadingPod)
         ? Text(
             'Opacity',
-            style: Theme.of(context).textTheme.subtitle1,
+            style: Theme.of(context).textTheme.titleMedium,
           )
         : null,
     recentColorsSubheading: ref.watch(showRecentSubheadingPod)
         ? Text(
             'Recent colors',
-            style: Theme.of(context).textTheme.subtitle1,
+            style: Theme.of(context).textTheme.titleMedium,
           )
         : null,
     showMaterialName: ref.watch(showMaterialNamePod),
@@ -140,9 +144,9 @@ Future<bool> colorPickerDialog(
     customColorSwatchesAndNames: App.colorsNameMap,
   ).showPickerDialog(
     context,
-    elevation: 4,
+    elevation: 2,
     // Let's make an even more transparent barrier color than black12
-    barrierColor: const Color(0x0F000000), // 6% opacity black
+    barrierColor: const Color(0x33000000), // 6% opacity black
     constraints:
         const BoxConstraints(minHeight: 580, minWidth: 480, maxWidth: 480),
   );

@@ -6,7 +6,7 @@ import '../../../widgets/switch_tile_tooltip.dart';
 
 @immutable
 class TonalSwitch extends ConsumerWidget {
-  const TonalSwitch({Key? key}) : super(key: key);
+  const TonalSwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,7 +16,7 @@ class TonalSwitch extends ConsumerWidget {
           'for selected color and enable color tone selection.'),
       value: ref.watch(enableTonesSelectionPod),
       onChanged: (bool value) =>
-          ref.read(enableTonesSelectionPod.state).state = value,
+          ref.read(enableTonesSelectionPod.notifier).state = value,
       tooltipEnabled: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(enableTonalPalette: '
           '${ref.read(enableTonesSelectionPod)})',

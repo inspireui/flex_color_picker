@@ -5,7 +5,7 @@ import '../../../pods/pods.dart';
 
 @immutable
 class ThemeModeSwitch extends ConsumerWidget {
-  const ThemeModeSwitch({Key? key}) : super(key: key);
+  const ThemeModeSwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,11 +26,11 @@ class ThemeModeSwitch extends ConsumerWidget {
           }
         }
         if (newIndex == 0) {
-          ref.read(themeModePod.state).state = ThemeMode.light;
+          ref.read(themeModePod.notifier).state = ThemeMode.light;
         } else if (newIndex == 1) {
-          ref.read(themeModePod.state).state = ThemeMode.system;
+          ref.read(themeModePod.notifier).state = ThemeMode.system;
         } else {
-          ref.read(themeModePod.state).state = ThemeMode.dark;
+          ref.read(themeModePod.notifier).state = ThemeMode.dark;
         }
       },
       children: const <Widget>[

@@ -1,3 +1,5 @@
+// ignore_for_file: use_super_parameters
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -41,7 +43,7 @@ class ColorCodeField extends StatefulWidget {
 
   /// TextStyle of the color code display and edit field.
   ///
-  /// Defaults to Theme.of(context).textTheme.bodyText2;
+  /// Defaults to Theme.of(context).textTheme.bodyMedium;
   final TextStyle? textStyle;
 
   /// The TextStyle of the prefix of the color code.
@@ -166,9 +168,9 @@ class _ColorCodeFieldState extends State<ColorCodeField> {
     final Color fieldBorder =
         isLight ? Colors.black.withAlpha(33) : Colors.white.withAlpha(55);
 
-    // Set the default text style to bodyText2 if not given.
+    // Set the default text style to bodyMedium if not given.
     TextStyle effectiveStyle = widget.textStyle ??
-        Theme.of(context).textTheme.bodyText2 ??
+        Theme.of(context).textTheme.bodyMedium ??
         const TextStyle(fontSize: 14);
 
     TextStyle effectivePrefixStyle = widget.prefixStyle ?? effectiveStyle;
@@ -219,17 +221,6 @@ class _ColorCodeFieldState extends State<ColorCodeField> {
               FilteringTextInputFormatter.allow(RegExp('[a-fA-F0-9]')),
               _UpperCaseTextFormatter(),
             ],
-            toolbarOptions: widget.readOnly
-                ? const ToolbarOptions(
-                    copy: true,
-                    selectAll: true,
-                  )
-                : const ToolbarOptions(
-                    copy: true,
-                    cut: true,
-                    selectAll: true,
-                    paste: true,
-                  ),
             decoration: InputDecoration(
               suffixIcon: widget.copyPasteBehavior.editFieldCopyButton
                   ? IconButton(

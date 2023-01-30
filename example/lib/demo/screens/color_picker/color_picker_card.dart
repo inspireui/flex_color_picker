@@ -8,27 +8,27 @@ import '../../utils/app.dart';
 /// The ColorPicker shown in a card on the ColorPickerScreen.
 @immutable
 class ColorPickerCard extends ConsumerWidget {
-  const ColorPickerCard({Key? key}) : super(key: key);
+  const ColorPickerCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Card(
-      elevation: 3,
+      elevation: 1,
       child: ColorPicker(
         color: ref.watch(cardPickerColorPod),
         onColorChangeStart: (Color color) {
-          ref.read(onColorChangeStartPod.state).state = color;
+          ref.read(onColorChangeStartPod.notifier).state = color;
         },
         onColorChanged: (Color color) {
-          ref.read(cardPickerColorPod.state).state = color;
-          ref.read(onColorChangedPod.state).state = color;
+          ref.read(cardPickerColorPod.notifier).state = color;
+          ref.read(onColorChangedPod.notifier).state = color;
         },
         onColorChangeEnd: (Color color) {
-          ref.read(onColorChangeEndPod.state).state = color;
+          ref.read(onColorChangeEndPod.notifier).state = color;
         },
         onRecentColorsChanged: (List<Color> colors) {
-          ref.read(cardRecentColorsPod.state).state = colors;
+          ref.read(cardRecentColorsPod.notifier).state = colors;
         },
         crossAxisAlignment: ref.watch(alignmentPod),
         padding: EdgeInsets.all(ref.watch(paddingPod)),
@@ -42,6 +42,7 @@ class ColorPickerCard extends ConsumerWidget {
         copyPasteBehavior: ColorPickerCopyPasteBehavior(
           ctrlC: ref.watch(ctrlCPod),
           ctrlV: ref.watch(ctrlVPod),
+          autoFocus: ref.watch(autoFocusPod),
           copyButton: ref.watch(copyButtonPod),
           pasteButton: ref.watch(pasteButtonPod),
           copyFormat: ref.watch(copyFormatPod),
@@ -67,6 +68,8 @@ class ColorPickerCard extends ConsumerWidget {
         columnSpacing: ref.watch(columnSpacingPod),
         wheelDiameter: ref.watch(wheelDiameterPod),
         wheelWidth: ref.watch(wheelWidthPod),
+        wheelSquarePadding: ref.watch(wheelSquarePaddingPod),
+        wheelSquareBorderRadius: ref.watch(wheelSquareBorderRadiusPod),
         wheelHasBorder: ref.watch(wheelHasBorderPod),
         enableTooltips: ref.watch(enableTooltipsPod),
         pickersEnabled: ref.watch(pickersEnabledPod),
@@ -74,43 +77,43 @@ class ColorPickerCard extends ConsumerWidget {
         title: ref.watch(showTitlePod)
             ? Text(
                 'ColorPicker',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               )
             : null,
         heading: ref.watch(showHeadingPod)
             ? Text(
                 'Select color',
-                style: Theme.of(context).textTheme.headline5,
+                style: Theme.of(context).textTheme.headlineSmall,
               )
             : null,
         subheading: ref.watch(showSubheadingPod)
             ? Text(
                 'Select color shade',
-                style: Theme.of(context).textTheme.subtitle1,
+                style: Theme.of(context).textTheme.titleMedium,
               )
             : null,
         tonalSubheading: ref.watch(showTonalSubheadingPod)
             ? Text(
                 'Material 3 tonal palette',
-                style: Theme.of(context).textTheme.subtitle1,
+                style: Theme.of(context).textTheme.titleMedium,
               )
             : null,
         wheelSubheading: ref.watch(showSubheadingPod)
             ? Text(
                 'Selected color and its color swatch',
-                style: Theme.of(context).textTheme.subtitle1,
+                style: Theme.of(context).textTheme.titleMedium,
               )
             : null,
         opacitySubheading: ref.watch(showOpacitySubheadingPod)
             ? Text(
                 'Opacity',
-                style: Theme.of(context).textTheme.subtitle1,
+                style: Theme.of(context).textTheme.titleMedium,
               )
             : null,
         recentColorsSubheading: ref.watch(showRecentSubheadingPod)
             ? Text(
                 'Recent colors',
-                style: Theme.of(context).textTheme.subtitle1,
+                style: Theme.of(context).textTheme.titleMedium,
               )
             : null,
         showMaterialName: ref.watch(showMaterialNamePod),
@@ -123,8 +126,8 @@ class ColorPickerCard extends ConsumerWidget {
         recentColors: ref.watch(cardRecentColorsPod),
         maxRecentColors: 8,
         customColorSwatchesAndNames: App.colorsNameMap,
-        colorCodeTextStyle: Theme.of(context).textTheme.subtitle1,
-        colorCodePrefixStyle: Theme.of(context).textTheme.caption,
+        colorCodeTextStyle: Theme.of(context).textTheme.titleMedium,
+        colorCodePrefixStyle: Theme.of(context).textTheme.bodySmall,
       ),
     );
   }

@@ -6,7 +6,7 @@ import '../../../widgets/switch_tile_tooltip.dart';
 
 @immutable
 class TitleSwitch extends ConsumerWidget {
-  const TitleSwitch({Key? key}) : super(key: key);
+  const TitleSwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,7 +15,7 @@ class TitleSwitch extends ConsumerWidget {
       subtitle: const Text('You can provide your own picker toolbar title, if '
           'it is null there is no title.'),
       value: ref.watch(showTitlePod),
-      onChanged: (bool value) => ref.read(showTitlePod.state).state = value,
+      onChanged: (bool value) => ref.read(showTitlePod.notifier).state = value,
       tooltipEnabled: ref.watch(enableTooltipsPod),
       tooltip: ref.read(showTitlePod)
           ? "ColorPicker(title: Text('Color Picker'))"

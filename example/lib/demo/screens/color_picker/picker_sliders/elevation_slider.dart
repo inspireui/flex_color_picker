@@ -6,23 +6,23 @@ import '../../../widgets/maybe_tooltip.dart';
 
 @immutable
 class ElevationSlider extends ConsumerWidget {
-  const ElevationSlider({Key? key}) : super(key: key);
+  const ElevationSlider({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaybeTooltip(
       condition: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(elevation: '
-          '${ref.read(elevationPod).floor().toString()})',
+          '${ref.read(elevationPod).floor()})',
       child: ListTile(
         title: const Text('Color picker item elevation'),
-        subtitle: Slider.adaptive(
+        subtitle: Slider(
           max: 16,
           divisions: 16,
-          label: ref.read(elevationPod).floor().toString(),
+          label: ref.watch(elevationPod).floor().toString(),
           value: ref.watch(elevationPod),
           onChanged: (double value) =>
-              ref.read(elevationPod.state).state = value,
+              ref.read(elevationPod.notifier).state = value,
         ),
         trailing: Padding(
           padding: const EdgeInsets.only(right: 12),

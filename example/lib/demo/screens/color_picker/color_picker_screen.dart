@@ -1,11 +1,12 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import '../../utils/app.dart';
+import '../../widgets/flex_app_bar.dart';
 import 'about.dart';
 import 'all_control_widgets.dart';
 import 'color_picker_card.dart';
+import 'picker_text_fields/text_field_focus_demo.dart';
+import 'picker_toggle_buttons/actions_order_switch.dart';
 
 /// Screen with the two ColorPickers and all controls and settings we use to
 /// manipulate their design and behavior.
@@ -14,7 +15,7 @@ import 'color_picker_card.dart';
 /// ColorPicker and the controls, each column when visible has its own
 /// ListView, so the columns can be scrolled individually when they are visible.
 class ColorPickerScreen extends StatelessWidget {
-  const ColorPickerScreen({Key? key}) : super(key: key);
+  const ColorPickerScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,37 +26,25 @@ class ColorPickerScreen extends StatelessWidget {
     if (columns < 1) columns = 1;
     if (columns > 4) columns = 4;
 
-    // AppBar background color
-    final Color bgColor = Theme.of(context).appBarTheme.backgroundColor ??
-        Theme.of(context).colorScheme.background;
+    // ScrollControllers for potential 4 List views
+    final ScrollController scrollOne = ScrollController();
+    final ScrollController scrollTwo = ScrollController();
+    final ScrollController scrollThree = ScrollController();
+    final ScrollController scrollFour = ScrollController();
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
+      appBar: FlexAppBar.styled(
+        context,
         centerTitle: true,
         title: const Text('FlexColorPicker Demo'),
         actions: const <Widget>[AboutIconButton()],
-        backgroundColor: Colors.transparent,
-        flexibleSpace: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: AlignmentDirectional.centerStart,
-                    end: AlignmentDirectional.centerEnd,
-                    colors: <Color>[
-                      bgColor,
-                      bgColor.withOpacity(0.2),
-                    ],
-                  ),
-                  border: Border(
-                    bottom: BorderSide(color: Theme.of(context).dividerColor),
-                  )),
-            ),
-          ),
-        ),
-      ),
+        blurred: true,
+        opacity: 0.5,
+        gradient: false,
+        hasBorderOnSurface: true,
+        scrim: false,
+      ).toAppBar(),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: App.maxBodyWidth),
@@ -66,7 +55,11 @@ class ColorPickerScreen extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 child: Scrollbar(
+                  controller: scrollOne,
+                  thumbVisibility: true,
+                  interactive: true,
                   child: ListView(
+                    controller: scrollOne,
                     padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                     children: <Widget>[
                       SizedBox(
@@ -86,7 +79,11 @@ class ColorPickerScreen extends StatelessWidget {
               if (columns > 1)
                 Expanded(
                   child: Scrollbar(
+                    controller: scrollTwo,
+                    thumbVisibility: true,
+                    interactive: true,
                     child: ListView(
+                      controller: scrollTwo,
                       padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                       children: <Widget>[
                         SizedBox(
@@ -105,7 +102,11 @@ class ColorPickerScreen extends StatelessWidget {
               if (columns > 2)
                 Expanded(
                   child: Scrollbar(
+                    controller: scrollThree,
+                    thumbVisibility: true,
+                    interactive: true,
                     child: ListView(
+                      controller: scrollThree,
                       padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                       children: <Widget>[
                         SizedBox(
@@ -123,7 +124,11 @@ class ColorPickerScreen extends StatelessWidget {
               if (columns > 3)
                 Expanded(
                   child: Scrollbar(
+                    controller: scrollFour,
+                    thumbVisibility: true,
+                    interactive: true,
                     child: ListView(
+                      controller: scrollFour,
                       padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                       children: <Widget>[
                         SizedBox(
@@ -143,7 +148,7 @@ class ColorPickerScreen extends StatelessWidget {
 }
 
 class _Column1 extends StatelessWidget {
-  const _Column1({Key? key}) : super(key: key);
+  const _Column1();
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +159,7 @@ class _Column1 extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 8, 0, 14),
           child: Text(
             'FlexColorPicker',
-            style: Theme.of(context).textTheme.headline4,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),
         // Show the color selected in a dialog and open a dialog to change it.
@@ -168,6 +173,7 @@ class _Column1 extends StatelessWidget {
           padding: EdgeInsets.all(6),
           child: ColorPickerCard(),
         ),
+
         ListTile(
           subtitle: Wrap(runSpacing: 8, children: const <Widget>[
             OnStartColorIndicator(),
@@ -197,13 +203,16 @@ class _Column1 extends StatelessWidget {
         ),
         const ParseShortHexCodeSwitch(),
         const Divider(),
+        const TextFieldFocusDemo(),
+        const PickerAutoFocusSwitch(),
+        const Divider(),
       ],
     );
   }
 }
 
 class _Column2 extends StatelessWidget {
-  const _Column2({Key? key}) : super(key: key);
+  const _Column2();
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -213,7 +222,7 @@ class _Column2 extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 8, 0, 14),
           child: Text(
             'Show and hide',
-            style: Theme.of(context).textTheme.headline4,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),
         //
@@ -248,7 +257,7 @@ class _Column2 extends StatelessWidget {
 }
 
 class _Column3 extends StatelessWidget {
-  const _Column3({Key? key}) : super(key: key);
+  const _Column3();
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -258,7 +267,7 @@ class _Column3 extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 8, 0, 14),
           child: Text(
             'Picker design',
-            style: Theme.of(context).textTheme.headline4,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),
         // Color picker size
@@ -272,6 +281,8 @@ class _Column3 extends StatelessWidget {
         //
         const WheelDiameterSlider(),
         const WheelWidthSlider(),
+        const WheelSquarePaddingSlider(),
+        const WheelSquareBorderRadiusSlider(),
         const WheelHasBorderSwitch(),
         const Divider(),
         //
@@ -288,7 +299,7 @@ class _Column3 extends StatelessWidget {
 }
 
 class _Column4 extends StatelessWidget {
-  const _Column4({Key? key}) : super(key: key);
+  const _Column4();
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -298,7 +309,7 @@ class _Column4 extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 8, 0, 14),
           child: Text(
             'Picker layout',
-            style: Theme.of(context).textTheme.headline4,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),
         const AlignmentSwitch(),
@@ -308,6 +319,7 @@ class _Column4 extends StatelessWidget {
         const OkButtonSwitch(),
         const CloseIsLastSwitch(),
         const DialogActionsButtonsSwitch(),
+        const ActionsOrderSwitch(),
         const DialogActionIconsSwitch(),
         const Divider(),
         //
@@ -315,7 +327,7 @@ class _Column4 extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 4, 0, 14),
           child: Text(
             'Copy paste actions',
-            style: Theme.of(context).textTheme.headline4,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),
         const ControlCopySwitch(),

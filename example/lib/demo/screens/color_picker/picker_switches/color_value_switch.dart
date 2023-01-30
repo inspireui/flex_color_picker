@@ -6,7 +6,7 @@ import '../../../widgets/switch_tile_tooltip.dart';
 
 @immutable
 class ColorValueSwitch extends ConsumerWidget {
-  const ColorValueSwitch({Key? key}) : super(key: key);
+  const ColorValueSwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,7 +16,7 @@ class ColorValueSwitch extends ConsumerWidget {
           'copied. Typically OFF, usable as a dev feature.'),
       value: ref.watch(showColorValuePod),
       onChanged: (bool value) =>
-          ref.read(showColorValuePod.state).state = value,
+          ref.read(showColorValuePod.notifier).state = value,
       tooltipEnabled: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(showColorValue: '
           '${ref.read(showColorValuePod)})',

@@ -6,24 +6,24 @@ import '../../../widgets/maybe_tooltip.dart';
 
 @immutable
 class WheelDiameterSlider extends ConsumerWidget {
-  const WheelDiameterSlider({Key? key}) : super(key: key);
+  const WheelDiameterSlider({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaybeTooltip(
       condition: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(wheelDiameter: '
-          '${ref.read(wheelDiameterPod).floor().toString()})',
+          '${ref.read(wheelDiameterPod).floor()})',
       child: ListTile(
-        title: const Text('Color wheel size'),
-        subtitle: Slider.adaptive(
+        title: const Text('Color wheel total width'),
+        subtitle: Slider(
           min: 150,
           max: 500,
           divisions: 500 - 150,
-          label: ref.read(wheelDiameterPod).floor().toString(),
+          label: ref.watch(wheelDiameterPod).floor().toString(),
           value: ref.watch(wheelDiameterPod),
           onChanged: (double value) =>
-              ref.read(wheelDiameterPod.state).state = value,
+              ref.read(wheelDiameterPod.notifier).state = value,
         ),
         trailing: Padding(
           padding: const EdgeInsets.only(right: 12),

@@ -43,6 +43,8 @@ class Keys {
   static const String hasBorder = 'hasBorder';
   static const String wheelDiameter = 'wheelDiameter';
   static const String wheelWidth = 'wheelWidth';
+  static const String wheelSquarePadding = 'wheelSquarePadding';
+  static const String wheelSquareBorderRadius = 'wheelSquareBorderRadius';
   static const String wheelHasBorder = 'wheelHasBorder';
   static const String opacityTrackHeight = 'opacityTrackHeight';
   static const String opacityTrackWidth = 'opacityTrackWidth';
@@ -56,11 +58,13 @@ class Keys {
   static const String okButton = 'okButton';
   static const String closeIsLast = 'closeIsLast';
   static const String dialogActionButtons = 'dialogActionButtons';
+  static const String dialogActionOrder = 'dialogActionOrder';
   static const String dialogActionIcons = 'dialogActionIcons';
   // Copy Paste Actions Riverpod providers.
   static const String copyFormat = 'copyFormat';
   static const String ctrlC = 'ctrlC';
   static const String ctrlV = 'ctrlV';
+  static const String autoFocus = 'autoFocus';
   static const String copyButton = 'copyButton';
   static const String pasteButton = 'pasteButton';
   static const String editFieldCopyButton = 'editFieldCopyButton';
@@ -115,6 +119,8 @@ class Keys {
     hasBorder: true,
     wheelDiameter: 190.0,
     wheelWidth: 16.0,
+    wheelSquarePadding: 0.0,
+    wheelSquareBorderRadius: 4.0,
     wheelHasBorder: false,
     opacityTrackHeight: 22.0,
     opacityTrackWidth: 700.0,
@@ -128,11 +134,13 @@ class Keys {
     okButton: true,
     closeIsLast: true,
     dialogActionButtons: true,
+    dialogActionOrder: ColorPickerActionButtonOrder.okIsRight,
     dialogActionIcons: true,
     // Copy Paste Actions Riverpod providers.
     copyFormat: ColorPickerCopyFormat.dartCode,
     ctrlC: true,
     ctrlV: true,
+    autoFocus: true,
     copyButton: true,
     pasteButton: true,
     editFieldCopyButton: true,

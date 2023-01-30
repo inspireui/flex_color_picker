@@ -7,7 +7,7 @@ import '../color_picker_dialog.dart';
 
 @immutable
 class MetaPickerColorIndicator extends ConsumerWidget {
-  const MetaPickerColorIndicator({Key? key}) : super(key: key);
+  const MetaPickerColorIndicator({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,12 +36,13 @@ class MetaPickerColorIndicator extends ConsumerWidget {
         onSelectFocus: false,
         onSelect: () async {
           final Color colorBeforeDialog = ref.read(cardPickerColorPod);
+          // ignore: use_build_context_synchronously
           if (!(await colorPickerDialog(
             context,
             ref,
             cardRemote: true,
           ))) {
-            ref.read(cardPickerColorPod.state).state = colorBeforeDialog;
+            ref.read(cardPickerColorPod.notifier).state = colorBeforeDialog;
           }
         },
       ),
@@ -51,9 +52,9 @@ class MetaPickerColorIndicator extends ConsumerWidget {
 
 class ColorControlBox extends ConsumerWidget {
   const ColorControlBox({
-    Key? key,
+    super.key,
     required this.color,
-  }) : super(key: key);
+  });
 
   final Color color;
 
@@ -69,7 +70,7 @@ class ColorControlBox extends ConsumerWidget {
       onSelectFocus: false,
       isSelected: ref.watch(cardPickerColorPod) == color,
       onSelect: () {
-        ref.read(cardPickerColorPod.state).state = color;
+        ref.read(cardPickerColorPod.notifier).state = color;
       },
     );
   }

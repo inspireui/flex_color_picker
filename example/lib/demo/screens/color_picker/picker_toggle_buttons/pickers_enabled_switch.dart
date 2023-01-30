@@ -6,7 +6,7 @@ import '../../../pods/pods.dart';
 import '../../../widgets/maybe_tooltip.dart';
 
 class PickersEnabledSwitch extends ConsumerWidget {
-  const PickersEnabledSwitch({Key? key}) : super(key: key);
+  const PickersEnabledSwitch({super.key});
   static const double _kToggleFontSize = 11.5;
 
   @override
@@ -45,7 +45,7 @@ class PickersEnabledSwitch extends ConsumerWidget {
                 // If 'accent' turned ON, then 'Both' is turned OFF.
                 if (index == 2 && isSelected[2]) isSelected[0] = false;
                 // Assign new state to enabled pickers.
-                ref.read(pickersEnabledPod.state).state =
+                ref.read(pickersEnabledPod.notifier).state =
                     <ColorPickerType, bool>{
                   ColorPickerType.both: isSelected[0],
                   ColorPickerType.primary: isSelected[1],

@@ -1,3 +1,5 @@
+// ignore_for_file: use_super_parameters
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -39,7 +41,7 @@ class SelectPicker extends StatelessWidget {
 
   /// Text style of the text items in the picker
   ///
-  /// If not provided, default to `Theme.of(context).textTheme.caption`.
+  /// If not provided, default to `Theme.of(context).textTheme.bodySmall`.
   final TextStyle? textStyle;
 
   /// The spacing after the picker. Defaults to 8.
@@ -49,7 +51,7 @@ class SelectPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     // Set default text style for the segmented slider control.
     final TextStyle segmentTextStyle = textStyle ??
-        Theme.of(context).textTheme.caption ??
+        Theme.of(context).textTheme.bodySmall ??
         const TextStyle(fontSize: 12);
 
     final Color effectiveThumbColor = thumbColor ??

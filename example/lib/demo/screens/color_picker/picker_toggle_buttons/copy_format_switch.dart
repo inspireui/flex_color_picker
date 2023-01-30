@@ -6,7 +6,7 @@ import '../../../pods/pods.dart';
 import '../../../widgets/maybe_tooltip.dart';
 
 class CopyFormatSwitch extends ConsumerWidget {
-  const CopyFormatSwitch({Key? key}) : super(key: key);
+  const CopyFormatSwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,7 +28,7 @@ class CopyFormatSwitch extends ConsumerWidget {
         trailing: ToggleButtons(
           isSelected: isSelected,
           onPressed: (int newIndex) {
-            ref.read(copyFormatPod.state).state =
+            ref.read(copyFormatPod.notifier).state =
                 ColorPickerCopyFormat.values[newIndex];
           },
           children: const <Widget>[

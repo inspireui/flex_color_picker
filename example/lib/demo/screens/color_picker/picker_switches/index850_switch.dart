@@ -6,7 +6,7 @@ import '../../../widgets/switch_tile_tooltip.dart';
 
 @immutable
 class Index850Switch extends ConsumerWidget {
-  const Index850Switch({Key? key}) : super(key: key);
+  const Index850Switch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,7 +16,7 @@ class Index850Switch extends ConsumerWidget {
           'the Grey swatch, turn this ON. Typically kept OFF.'),
       value: ref.watch(includeIndex850Pod),
       onChanged: (bool value) =>
-          ref.read(includeIndex850Pod.state).state = value,
+          ref.read(includeIndex850Pod.notifier).state = value,
       tooltipEnabled: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(includeIndex850: '
           '${ref.read(includeIndex850Pod)})',

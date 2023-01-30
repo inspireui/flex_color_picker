@@ -6,24 +6,24 @@ import '../../../widgets/maybe_tooltip.dart';
 
 @immutable
 class OpacityTrackHeightSlider extends ConsumerWidget {
-  const OpacityTrackHeightSlider({Key? key}) : super(key: key);
+  const OpacityTrackHeightSlider({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaybeTooltip(
       condition: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(opacityTrackHeight: '
-          '${ref.read(opacityTrackHeightPod).floor().toString()})',
+          '${ref.read(opacityTrackHeightPod).floor()})',
       child: ListTile(
         title: const Text('Opacity slider height'),
-        subtitle: Slider.adaptive(
+        subtitle: Slider(
           min: 10,
           max: 50,
           divisions: 50 - 10,
-          label: ref.read(opacityTrackHeightPod).floor().toString(),
-          value: ref.watch(opacityTrackHeightPod.state).state,
+          label: ref.watch(opacityTrackHeightPod).floor().toString(),
+          value: ref.watch(opacityTrackHeightPod.notifier).state,
           onChanged: (double value) =>
-              ref.read(opacityTrackHeightPod.state).state = value,
+              ref.read(opacityTrackHeightPod.notifier).state = value,
         ),
         trailing: Padding(
           padding: const EdgeInsets.only(right: 12),

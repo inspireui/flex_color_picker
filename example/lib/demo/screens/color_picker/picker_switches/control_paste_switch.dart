@@ -6,7 +6,7 @@ import '../../../widgets/switch_tile_tooltip.dart';
 
 @immutable
 class ControlPasteSwitch extends ConsumerWidget {
-  const ControlPasteSwitch({Key? key}) : super(key: key);
+  const ControlPasteSwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -14,7 +14,7 @@ class ControlPasteSwitch extends ConsumerWidget {
       title: const Text('Enable keyboard PASTE shortcut'),
       subtitle: const Text('CMD-V on Apple, CTRL-V on other'),
       value: ref.watch(ctrlVPod),
-      onChanged: (bool value) => ref.read(ctrlVPod.state).state = value,
+      onChanged: (bool value) => ref.read(ctrlVPod.notifier).state = value,
       tooltipEnabled: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(copyPasteBehavior:\n'
           '  ColorPickerCopyPasteBehavior(ctrlV: '

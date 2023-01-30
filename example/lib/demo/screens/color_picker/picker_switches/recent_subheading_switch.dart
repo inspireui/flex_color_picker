@@ -6,7 +6,7 @@ import '../../../widgets/switch_tile_tooltip.dart';
 
 @immutable
 class RecentSubheadingSwitch extends ConsumerWidget {
-  const RecentSubheadingSwitch({Key? key}) : super(key: key);
+  const RecentSubheadingSwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,7 +16,7 @@ class RecentSubheadingSwitch extends ConsumerWidget {
           'it is null there is no sub heading.'),
       value: ref.watch(showRecentSubheadingPod),
       onChanged: (bool value) =>
-          ref.read(showRecentSubheadingPod.state).state = value,
+          ref.read(showRecentSubheadingPod.notifier).state = value,
       tooltipEnabled: ref.watch(enableTooltipsPod),
       tooltip: ref.read(showRecentSubheadingPod)
           ? "ColorPicker(recentColorsSubheading: Text('Recent colors'))"

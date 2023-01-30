@@ -5,7 +5,7 @@ import '../../pods/pods_reset.dart';
 import '../../widgets/platform_alert_dialog.dart';
 
 class ResetSettingsButton extends ConsumerWidget {
-  const ResetSettingsButton({Key? key}) : super(key: key);
+  const ResetSettingsButton({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,19 +23,13 @@ class ResetSettingsButton extends ConsumerWidget {
           defaultActionText: translate.okButtonLabel,
           cancelActionText: translate.cancelButtonLabel,
         ).show(context, useRootNavigator: true);
-        // TODO(rydmike): Potential lint rule false positive?
-        // Based on this: https://dart-lang.github.io/linter/lints/use_build_context_synchronously.html
-        // The rule should only apply to stateful widget. This Widget is
-        // Stateless, can't use proposed mounted check in a stateless widget!
-        // Thus we ignore the new experimental lint rule for now.
-        // ignore: use_ build_context_synchronously
         if (didReset ?? false) resetSettings(ref);
       },
       child: Padding(
         padding: const EdgeInsets.all(7),
         child: Text(
           'Reset settings',
-          style: Theme.of(context).textTheme.subtitle1,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
     );

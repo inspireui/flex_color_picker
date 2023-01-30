@@ -6,7 +6,7 @@ import '../../../widgets/switch_tile_tooltip.dart';
 
 @immutable
 class SnackbarParseErrorSwitch extends ConsumerWidget {
-  const SnackbarParseErrorSwitch({Key? key}) : super(key: key);
+  const SnackbarParseErrorSwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -14,7 +14,7 @@ class SnackbarParseErrorSwitch extends ConsumerWidget {
       title: const Text('Snackbar paste format error message'),
       value: ref.watch(snackbarParseErrorPod),
       onChanged: (bool value) =>
-          ref.read(snackbarParseErrorPod.state).state = value,
+          ref.read(snackbarParseErrorPod.notifier).state = value,
       tooltipEnabled: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(copyPasteBehavior:\n'
           '  ColorPickerCopyPasteBehavior(snackBarParseError: '

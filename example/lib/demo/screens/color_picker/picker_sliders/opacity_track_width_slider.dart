@@ -6,12 +6,12 @@ import '../../../widgets/maybe_tooltip.dart';
 
 @immutable
 class OpacityTrackWidthSlider extends ConsumerWidget {
-  const OpacityTrackWidthSlider({Key? key}) : super(key: key);
+  const OpacityTrackWidthSlider({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     double? usedOpacityTrackWidth;
-    final double trackWidth = ref.read(opacityTrackWidthPod);
+    final double trackWidth = ref.watch(opacityTrackWidthPod);
 
     if (trackWidth >= 150 && trackWidth < 700) {
       usedOpacityTrackWidth = trackWidth;
@@ -22,17 +22,17 @@ class OpacityTrackWidthSlider extends ConsumerWidget {
     return MaybeTooltip(
       condition: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(opacityTrackWidth: '
-          '${usedOpacityTrackWidth?.floor().toString()})',
+          '${usedOpacityTrackWidth?.floor()})',
       child: ListTile(
         title: const Text('Opacity slider width'),
-        subtitle: Slider.adaptive(
+        subtitle: Slider(
           min: 150,
           max: 700,
           divisions: 700 - 150,
           label: trackWidth.floor().toString(),
           value: ref.watch(opacityTrackWidthPod),
           onChanged: (double value) =>
-              ref.read(opacityTrackWidthPod.state).state = value,
+              ref.read(opacityTrackWidthPod.notifier).state = value,
         ),
         trailing: Padding(
           padding: const EdgeInsets.only(right: 12),

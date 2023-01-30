@@ -1,23 +1,22 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app.dart';
 
 /// The theme for this app.
 class AppTheme {
-  // This constructor prevents external instantiation and extension.
   AppTheme._();
 
   /// The used light theme.
   static ThemeData get light {
+    final ColorScheme colorSchemeLight =
+        ColorScheme.fromSeed(seedColor: App.seedColor);
     return ThemeData.from(
-      colorScheme: colorSchemeLight,
-      textTheme: textTheme,
+      colorScheme: ColorScheme.fromSeed(seedColor: App.seedColor),
+      useMaterial3: true,
     ).copyWith(
       scaffoldBackgroundColor: App.scaffoldBackgroundLight,
-      toggleableActiveColor: colorSchemeLight.secondary,
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
@@ -35,31 +34,22 @@ class AppTheme {
       toggleButtonsTheme: toggleButtonsThemeData(colorSchemeLight),
       tooltipTheme: tooltipTheme(false),
       visualDensity: VisualDensity.standard,
+      typography: Typography.material2021(platform: defaultTargetPlatform),
     );
   }
 
-  // Light theme color scheme.
-  static ColorScheme get colorSchemeLight => const ColorScheme.light().copyWith(
-        primary: App.primaryLight,
-        primaryContainer: App.primaryContainerLight,
-        secondary: App.secondaryLight,
-        secondaryContainer: App.secondaryContainerLight,
-        surface: App.surfaceLight,
-        background: App.backgroundLight,
-        onPrimary: App.onPrimaryLight,
-        onSecondary: App.onSecondaryLight,
-      );
-
   /// The used dark theme.
   static ThemeData get dark {
+    final ColorScheme colorSchemeDark = ColorScheme.fromSeed(
+        seedColor: App.seedColor, brightness: Brightness.dark);
     return ThemeData.from(
       colorScheme: colorSchemeDark,
-      textTheme: textTheme,
+      useMaterial3: true,
+      // textTheme: textTheme,
     ).copyWith(
       scaffoldBackgroundColor: App.scaffoldBackgroundDark,
-      toggleableActiveColor: colorSchemeDark.secondary,
       appBarTheme: const AppBarTheme(
-        backgroundColor: App.scaffoldBackgroundDark,
+        backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         elevation: 0,
         systemOverlayStyle: SystemUiOverlayStyle(
@@ -74,70 +64,15 @@ class AppTheme {
       toggleButtonsTheme: toggleButtonsThemeData(colorSchemeDark),
       tooltipTheme: tooltipTheme(true),
       visualDensity: VisualDensity.standard,
+      typography: Typography.material2021(platform: defaultTargetPlatform),
     );
   }
-
-  // Dark theme color scheme.
-  static ColorScheme get colorSchemeDark => const ColorScheme.dark().copyWith(
-        primary: App.primaryDark,
-        primaryContainer: App.primaryContainerDark,
-        secondary: App.secondaryDark,
-        secondaryContainer: App.secondaryContainerDark,
-        surface: App.surfaceDark,
-        background: App.backgroundDark,
-        onPrimary: App.onPrimaryDark,
-        onSecondary: App.onSecondaryDark,
-      );
-
-  // TODO(rydmike): Investigate potential GoogleFonts issue on Windows platform.
-  // Making a custom text theme here, via on-line GoogleFonts load. Intended to
-  // use something else than "Roboto", but they were all a little bit
-  // broken on Windows platform, not sure why. Need to download and try as
-  // assets and compare to that method and also compare to Web builds.
-  // Tested like this with: 'sourceSansPro', 'lato' and 'notoSans' all in
-  // theory nice fonts, but all were a tiny bit broken with clearly faulty
-  // pixels in some letters on Windows builds. Did not test Web builds with
-  // them yet used via GoogleFonts. Anyway sticking to plain old "roboto" for
-  // now. At least with this setup will get the "Roboto" font on all platforms.
-  // If no font is specified, we will get platform dependent default font,
-  // just want the same font here for ALL platforms to ensure a consistent
-  // result in this demo.
-  static TextTheme get textTheme => TextTheme(
-        headline1: GoogleFonts.roboto(
-            fontSize: 60, fontWeight: FontWeight.w300, letterSpacing: -1.5),
-        headline2: GoogleFonts.roboto(
-            fontSize: 48, fontWeight: FontWeight.w300, letterSpacing: -0.5),
-        headline3:
-            GoogleFonts.roboto(fontSize: 48, fontWeight: FontWeight.w400),
-        headline4: GoogleFonts.roboto(
-            fontSize: 32, fontWeight: FontWeight.w400, letterSpacing: 0.25),
-        headline5:
-            GoogleFonts.roboto(fontSize: 24, fontWeight: FontWeight.w400),
-        headline6: GoogleFonts.roboto(
-            fontSize: 20, fontWeight: FontWeight.w500, letterSpacing: 0.15),
-        bodyText1: GoogleFonts.roboto(
-            fontSize: 16, fontWeight: FontWeight.w400, letterSpacing: 0.5),
-        bodyText2: GoogleFonts.roboto(
-            fontSize: 14, fontWeight: FontWeight.w400, letterSpacing: 0.25),
-        subtitle1: GoogleFonts.roboto(
-            fontSize: 16, fontWeight: FontWeight.w400, letterSpacing: 0.15),
-        subtitle2: GoogleFonts.roboto(
-            fontSize: 14, fontWeight: FontWeight.w500, letterSpacing: 0.1),
-        button: GoogleFonts.roboto(
-            fontSize: 14, fontWeight: FontWeight.w500, letterSpacing: 1.25),
-        caption: GoogleFonts.roboto(
-            fontSize: 12, fontWeight: FontWeight.w400, letterSpacing: 0.4),
-        overline: GoogleFonts.roboto(
-            fontSize: 10, fontWeight: FontWeight.w400, letterSpacing: 1.5),
-      );
 
   /// Theme definitions give ElevatedButton a Stadium rounded design.
   static ElevatedButtonThemeData get elevatedButtonTheme =>
       ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-        shape: const StadiumBorder(),
         padding: roundButtonPadding,
-        minimumSize: minButtonSize,
       ));
 
   /// Theme definitions give OutlinedButton a Stadium rounded design.
@@ -145,13 +80,7 @@ class AppTheme {
           ColorScheme scheme, Color disabledColor) =>
       OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          shape: const StadiumBorder(),
-          // side: BorderSide(
-          //   color: borderColor,
-          //   width: App.outlineThickness,
-          // ),
           padding: roundButtonPadding,
-          minimumSize: minButtonSize,
         ).copyWith(
           side: MaterialStateProperty.resolveWith<BorderSide?>(
             (Set<MaterialState> states) {
@@ -168,7 +97,9 @@ class AppTheme {
                 );
               }
               return BorderSide(
-                  color: scheme.primary, width: App.outlineThickness);
+                color: scheme.primary,
+                width: App.outlineThickness,
+              );
             },
           ),
         ),
@@ -177,27 +108,22 @@ class AppTheme {
   /// Theme definitions give TextButton a Stadium rounded design.
   static TextButtonThemeData get textButtonTheme => TextButtonThemeData(
           style: TextButton.styleFrom(
-        shape: const StadiumBorder(),
+        // shape: const StadiumBorder(),
         padding: roundButtonPadding,
-        minimumSize: minButtonSize,
       ));
 
   /// The stadium rounded buttons generally need a bit more padding to look
   /// good, adjust here to tune the padding for all of them globally in the app.
-  /// Currently using the default padding the old buttons had.
   static const EdgeInsets roundButtonPadding =
-      EdgeInsets.symmetric(horizontal: 16, vertical: 8);
-
-  /// The old buttons had a minimum size that looked better, we keep that.
-  static const Size minButtonSize = Size(88, 36);
+      EdgeInsets.symmetric(horizontal: 16, vertical: 4);
 
   /// ToggleButtons theme
   static ToggleButtonsThemeData toggleButtonsThemeData(
           ColorScheme colorScheme) =>
       ToggleButtonsThemeData(
         color: colorScheme.onSurface,
-        selectedColor: colorScheme.onPrimary,
-        fillColor: colorScheme.secondary.withOpacity(0.94),
+        selectedColor: colorScheme.onPrimaryContainer,
+        fillColor: colorScheme.primaryContainer,
         hoverColor: colorScheme.primary.withOpacity(0.2),
         focusColor: colorScheme.primary.withOpacity(0.3),
         borderWidth: App.outlineThickness,
@@ -214,8 +140,7 @@ class AppTheme {
 
   /// Use an alternative tooltip style.
   static TooltipThemeData tooltipTheme(bool isDark) => TooltipThemeData(
-        padding: const EdgeInsets.fromLTRB(8, 4, 8, 5),
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        waitDuration: const Duration(milliseconds: 1200),
         textStyle: TextStyle(
           color: isDark ? Colors.black : Colors.white,
           fontSize: tooltipFontSize,
@@ -231,12 +156,7 @@ class AppTheme {
         ),
       );
 
-  /// The current default theme for Material themed Tooltips are poor design
-  /// choices for desktop https://material.io/components/tooltips#specs.
-  /// See issue: https://github.com/flutter/flutter/issues/71429
-  /// The font size of 10 dp is just too small for desktops with pixel density
-  /// 1.0. Normally I use 12dp on desktop, but reading the API tooltips at
-  /// 13 dp was a bit nicer.
+  /// Custom tooltip font size.
   static double get tooltipFontSize {
     switch (defaultTargetPlatform) {
       case TargetPlatform.macOS:

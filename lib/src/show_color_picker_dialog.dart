@@ -1,3 +1,5 @@
+// ignore_for_file: comment_references
+
 part of 'color_picker.dart';
 
 /// Define a color picker, show its dialog and wait for it to return a color.
@@ -8,7 +10,6 @@ Future<Color> showColorPickerDialog(
 
   /// The active color selection when the color picker is created.
   Color color, {
-
   /// A [ColorPickerType] to bool map. Defines which pickers are enabled in the
   /// color picker's sliding selector and thus available as color pickers.
   ///
@@ -186,6 +187,26 @@ Future<Color> showColorPickerDialog(
   /// Defaults to 16 dp. Must be from 4 to maximum 50 dp.
   double wheelWidth = 16,
 
+  /// Padding between shade square inside the hue wheel and inner
+  /// side of the wheel.
+  ///
+  /// Keep it reasonable in relation to wheelDiameter and wheelWidth, values
+  /// from 0 to 20 are recommended.
+  ///
+  /// Defaults to 0 dp.
+  double wheelSquarePadding = 0,
+
+  /// Border radius of the shade square inside the hue wheel.
+  ///
+  /// Keep it reasonable, the thumb center always goes out to the square box
+  /// corner, regardless of this border radius. It is only for visual design,
+  /// the edge color shades are in the sharp corner, even if not shown.
+  ///
+  /// Recommended values 0 to 16.
+  ///
+  /// Defaults to 4 dp.
+  double wheelSquareBorderRadius = 4,
+
   /// Set to true to show a 1 dp border around the color wheel.
   ///
   /// Defaults to false.
@@ -257,7 +278,7 @@ Future<Color> showColorPickerDialog(
 
   /// Text style for the displayed material color name in the picker.
   ///
-  /// Defaults to `Theme.of(context).textTheme.bodyText2`, if not defined.
+  /// Defaults to `Theme.of(context).textTheme.bodyMedium`, if not defined.
   TextStyle? materialNameTextStyle,
 
   /// Set to true to show an English color name of the selected `color`.
@@ -272,7 +293,7 @@ Future<Color> showColorPickerDialog(
 
   /// Text style for the displayed color name in the picker.
   ///
-  /// Defaults to `Theme.of(context).textTheme.bodyText2`, if not defined.
+  /// Defaults to `Theme.of(context).textTheme.bodyMedium`, if not defined.
   TextStyle? colorNameTextStyle,
 
   /// Set to true to show the RGB Hex color code of the selected `color`.
@@ -302,7 +323,7 @@ Future<Color> showColorPickerDialog(
 
   /// Text style for the displayed generic color name in the picker.
   ///
-  /// Defaults to `Theme.of(context).textTheme.bodyText2`, if not defined.
+  /// Defaults to `Theme.of(context).textTheme.bodyMedium`, if not defined.
   TextStyle? colorCodeTextStyle,
 
   /// The TextStyle of the prefix of the color code.
@@ -392,7 +413,7 @@ Future<Color> showColorPickerDialog(
 
   /// The TextStyle of the labels in segmented color picker type selector.
   ///
-  /// Defaults to `Theme.of(context).textTheme.caption`, if not defined.
+  /// Defaults to `Theme.of(context).textTheme.bodySmall`, if not defined.
   TextStyle? pickerTypeTextStyle,
 
   /// A [ColorPickerType] to String map that contains labels for the picker
@@ -444,7 +465,7 @@ Future<Color> showColorPickerDialog(
   /// Style for the text in the dialog `title` of this `AlertDialog`.
   ///
   /// If null, `DialogTheme.titleTextStyle` is used. If that's null,
-  /// defaults to `TextTheme.headline6` of `ThemeData.textTheme`.
+  /// defaults to `TextTheme.titleLarge` of `ThemeData.textTheme`.
   final TextStyle? titleTextStyle,
 
   /// Padding around the content in the dialog.
@@ -459,17 +480,25 @@ Future<Color> showColorPickerDialog(
   /// Typically used to provide padding to the button bar between the button
   /// bar and the edges of the dialog.
   ///
-  /// Defaults to `EdgeInsets.symmetric(horizontal: 16)`.
-  final EdgeInsetsGeometry actionsPadding =
-      const EdgeInsets.symmetric(horizontal: 16),
+  /// Defaults to null and follows ambient [AlertDialog] themed actions padding
+  /// or [AlertDialog] default if not defined.
+  ///
+  /// Versions before FlexColorPicker 3.0.0 defaulted to
+  /// `EdgeInsets.symmetric(horizontal: 16) use it for same padding as in
+  /// previous versions.
+  final EdgeInsetsGeometry? actionsPadding,
 
   /// The padding that surrounds each bottom action button.
   ///
   /// This is different from [actionsPadding], which defines the padding
   /// between the entire button bar and the edges of the dialog.
   ///
-  /// Defaults to `EdgeInsets.all(16)`.
-  final EdgeInsetsGeometry buttonPadding = const EdgeInsets.all(16),
+  /// Defaults to null and follows ambient [AlertDialog] themed button padding
+  /// or [AlertDialog] default if not defined.
+  ///
+  /// Versions before FlexColorPicker 3.0.0 defaulted to `EdgeInsets.all(16),
+  /// use it for same button padding as in previous versions.
+  final EdgeInsetsGeometry? buttonPadding,
 
   /// The background color of the surface of this Dialog.
   ///
@@ -552,6 +581,10 @@ Future<Color> showColorPickerDialog(
   /// You can also make the barrier completely transparent.
   Color barrierColor = Colors.black12,
 
+  /// The `barrierLabel` argument is the semantic label used for a dismissible
+  /// barrier. This argument defaults to `null`.
+  String? barrierLabel,
+
   /// The `useSafeArea` argument is used to indicate if the dialog should only
   /// display in 'safe' areas of the screen not used by the operating system
   /// (see [SafeArea] for more details).
@@ -561,38 +594,27 @@ Future<Color> showColorPickerDialog(
   /// be constrained by the screen size.
   bool useSafeArea = true,
 
-  /// Usage of `useRootNavigator` here is deprecated.
-  ///
-  /// The `useRootNavigator` argument is now respected on all Navigator
-  /// pop functions used in the [ColorPicker] widget itself and by
-  /// built-in dialogs used by the [ColorPicker]. In order to support this,
-  /// the current `useRootNavigator` property in the
-  /// [ColorPicker.showPickerDialog] and in the function
-  /// [showColorPickerDialog] had to be deprecated.
-  ///
-  /// The property has moved to become a configuration option in
-  /// [ColorPickerActionButtons] class in order to make it accessible to
-  /// the Navigator pop functions both in the [ColorPicker] widget itself,
-  /// as well as by built-in dialogs.
-  ///
-  /// The default behavior has not been changed, the setting still defaults
-  /// to using dialogs that use the root navigator, but now the pop
-  /// functions work as intended.
-  ///
-  /// If you for some reason have used none root navigators for the built-in
-  /// dialogs in previous version, you need to set
-  /// `ColorPickerActionButtons(useRootNavigator: false)` in
-  /// `ColorPicker(actionButtons)` or `showColorPickerDialog(actionButtons)`.
-  @Deprecated(
-    'This property is no longer set here and has no function if assigned here. '
-    'From version 2.1.0 it must be defined via same property in configuration '
-    'class ColorPickerActionButtons(useRootNavigator).',
-  )
-      bool useRootNavigator = true,
-
   /// The `routeSettings` argument is passed to [showGeneralDialog],
   /// see [RouteSettings] for details.
   RouteSettings? routeSettings,
+
+  /// Offset anchorPoint for the dialog.
+  Offset? anchorPoint,
+
+  /// The [transitionBuilder] argument is used to define how the route
+  /// arrives on and leaves off the screen.
+  ///
+  /// If this transition is not specified, the default Material platform
+  /// transition builder for [showDialog] is used.
+  RouteTransitionsBuilder? transitionBuilder,
+
+  /// The [transitionDuration] argument is used to determine how long it takes
+  /// for the route to arrive on or leave off the screen.
+  ///
+  /// It only has any effect when a custom `transitionBuilder`is used.
+  ///
+  /// This argument defaults to 200 milliseconds.
+  Duration transitionDuration = const Duration(milliseconds: 200),
 
   /// You can provide BoxConstraints to constrain the size of the dialog.
   ///
@@ -611,6 +633,7 @@ Future<Color> showColorPickerDialog(
     /// Picker properties
     ) async {
   Color selectedColor = color;
+  // ignore: use_build_context_synchronously
   if (!(await ColorPicker(
     color: color,
     onColorChanged: (Color newColor) {
@@ -640,6 +663,8 @@ Future<Color> showColorPickerDialog(
     borderColor: borderColor,
     wheelDiameter: wheelDiameter,
     wheelWidth: wheelWidth,
+    wheelSquarePadding: wheelSquarePadding,
+    wheelSquareBorderRadius: wheelSquareBorderRadius,
     wheelHasBorder: wheelHasBorder,
     title: title,
     heading: heading,
@@ -679,10 +704,14 @@ Future<Color> showColorPickerDialog(
     insetPadding: insetPadding,
     clipBehavior: clipBehavior,
     shape: shape,
-    barrierDismissible: barrierDismissible,
     barrierColor: barrierColor,
+    barrierDismissible: barrierDismissible,
+    barrierLabel: barrierLabel,
     useSafeArea: useSafeArea,
     routeSettings: routeSettings,
+    anchorPoint: anchorPoint,
+    transitionBuilder: transitionBuilder,
+    transitionDuration: transitionDuration,
     constraints: constraints,
   ))) {
     selectedColor = color;

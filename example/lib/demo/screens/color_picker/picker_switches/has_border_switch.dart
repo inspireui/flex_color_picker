@@ -6,7 +6,7 @@ import '../../../widgets/switch_tile_tooltip.dart';
 
 @immutable
 class HasBorderSwitch extends ConsumerWidget {
-  const HasBorderSwitch({Key? key}) : super(key: key);
+  const HasBorderSwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,7 +15,7 @@ class HasBorderSwitch extends ConsumerWidget {
       subtitle: const Text('With the API you can also adjust the '
           'border color.'),
       value: ref.watch(hasBorderPod),
-      onChanged: (bool value) => ref.read(hasBorderPod.state).state = value,
+      onChanged: (bool value) => ref.read(hasBorderPod.notifier).state = value,
       tooltipEnabled: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(hasBorder: ${ref.read(hasBorderPod)})',
     );

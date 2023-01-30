@@ -6,24 +6,24 @@ import '../../../widgets/maybe_tooltip.dart';
 
 @immutable
 class OpacityThumbRadiusSlider extends ConsumerWidget {
-  const OpacityThumbRadiusSlider({Key? key}) : super(key: key);
+  const OpacityThumbRadiusSlider({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaybeTooltip(
       condition: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(opacityThumbRadius: '
-          '${ref.read(opacityThumbRadiusPod).floor().toString()})',
+          '${ref.read(opacityThumbRadiusPod).floor()})',
       child: ListTile(
         title: const Text('Opacity slider thumb radius'),
-        subtitle: Slider.adaptive(
+        subtitle: Slider(
           min: 12,
           max: 30,
           divisions: 30 - 12,
-          label: ref.read(opacityThumbRadiusPod).floor().toString(),
+          label: ref.watch(opacityThumbRadiusPod).floor().toString(),
           value: ref.watch(opacityThumbRadiusPod),
           onChanged: (double value) =>
-              ref.read(opacityThumbRadiusPod.state).state = value,
+              ref.read(opacityThumbRadiusPod.notifier).state = value,
         ),
         trailing: Padding(
           padding: const EdgeInsets.only(right: 12),

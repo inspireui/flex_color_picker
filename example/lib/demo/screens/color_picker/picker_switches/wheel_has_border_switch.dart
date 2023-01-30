@@ -6,7 +6,7 @@ import '../../../widgets/switch_tile_tooltip.dart';
 
 @immutable
 class WheelHasBorderSwitch extends ConsumerWidget {
-  const WheelHasBorderSwitch({Key? key}) : super(key: key);
+  const WheelHasBorderSwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,7 +16,7 @@ class WheelHasBorderSwitch extends ConsumerWidget {
           'border color'),
       value: ref.watch(wheelHasBorderPod),
       onChanged: (bool value) =>
-          ref.read(wheelHasBorderPod.state).state = value,
+          ref.read(wheelHasBorderPod.notifier).state = value,
       tooltipEnabled: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(wheelHasBorder: '
           '${ref.read(wheelHasBorderPod)})',

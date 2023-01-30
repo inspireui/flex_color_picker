@@ -24,6 +24,15 @@ import 'widgets/tonal_palette_colors.dart';
 
 part 'show_color_picker_dialog.dart';
 
+// ignore_for_file: comment_references
+
+// Set the bool flag to true to show debug prints. Even if you forgot
+// to set it to false, debug prints will not show in release builds.
+// The handy part is that if it gets in the way in debugging, it is an easy
+// toggle to turn it off here for just this feature. You can leave it true
+// below to see this feature's logs in debug mode.
+const bool _debug = !kReleaseMode && false;
+
 const int _minRecentColors = 2;
 const int _maxRecentColors = 20;
 
@@ -57,7 +66,7 @@ const int _maxRecentColors = 20;
 class ColorPicker extends StatefulWidget {
   /// Default constructor for the color picker.
   const ColorPicker({
-    Key? key,
+    super.key,
     // Core properties, set color and change callbacks.
     this.color = Colors.blue,
     required this.onColorChanged,
@@ -99,6 +108,8 @@ class ColorPicker extends StatefulWidget {
     this.borderColor,
     this.wheelDiameter = 190,
     this.wheelWidth = 16,
+    this.wheelSquarePadding = 0,
+    this.wheelSquareBorderRadius = 4,
     this.wheelHasBorder = false,
     // Title, headings and sub headings used by the color picker.
     this.title,
@@ -173,8 +184,7 @@ class ColorPicker extends StatefulWidget {
             maxRecentColors >= _minRecentColors &&
                 maxRecentColors <= _maxRecentColors,
             'The maxRecentColors must be >= $_minRecentColors '
-            'and <= $_maxRecentColors.'),
-        super(key: key);
+            'and <= $_maxRecentColors.');
 
   /// The active color selection when the color picker is created.
   final Color color;
@@ -375,6 +385,26 @@ class ColorPicker extends StatefulWidget {
   /// Defaults to 16 dp. Must be from 4 to maximum 50 dp.
   final double wheelWidth;
 
+  /// Padding between shade square inside the hue wheel and inner
+  /// side of the wheel.
+  ///
+  /// Keep it reasonable in relation to wheelDiameter and wheelWidth, values
+  /// from 0 to 20 are recommended.
+  ///
+  /// Defaults to 0 dp.
+  final double wheelSquarePadding;
+
+  /// Border radius of the shade square inside the hue wheel.
+  ///
+  /// Keep it reasonable, the thumb center always goes out to the square box
+  /// corner, regardless of this border radius. It is only for visual design,
+  /// the edge color shades are in the sharp corner, even if not shown.
+  ///
+  /// Recommended values 0 to 16.
+  ///
+  /// Defaults to 4 dp.
+  final double wheelSquareBorderRadius;
+
   /// Set to true to show a 1 dp border around the color wheel.
   ///
   /// Defaults to false.
@@ -446,7 +476,7 @@ class ColorPicker extends StatefulWidget {
 
   /// Text style for the displayed material color name in the picker.
   ///
-  /// Defaults to `Theme.of(context).textTheme.bodyText2`, if not defined.
+  /// Defaults to `Theme.of(context).textTheme.bodyMedium`, if not defined.
   final TextStyle? materialNameTextStyle;
 
   /// Set to true to show an English color name of the selected [color].
@@ -461,7 +491,7 @@ class ColorPicker extends StatefulWidget {
 
   /// Text style for the displayed color name in the picker.
   ///
-  /// Defaults to `Theme.of(context).textTheme.bodyText2`, if not defined.
+  /// Defaults to `Theme.of(context).textTheme.bodyMedium`, if not defined.
   final TextStyle? colorNameTextStyle;
 
   /// Set to true to show the RGB Hex color code of the selected [color].
@@ -491,7 +521,7 @@ class ColorPicker extends StatefulWidget {
 
   /// Text style for the displayed generic color name in the picker.
   ///
-  /// Defaults to `Theme.of(context).textTheme.bodyText2`, if not defined.
+  /// Defaults to `Theme.of(context).textTheme.bodyMedium`, if not defined.
   final TextStyle? colorCodeTextStyle;
 
   /// Old property, no longer in use. This property is now set via
@@ -603,7 +633,7 @@ class ColorPicker extends StatefulWidget {
 
   /// The TextStyle of the labels in segmented color picker type selector.
   ///
-  /// Defaults to `Theme.of(context).textTheme.caption`, if not defined.
+  /// Defaults to `Theme.of(context).textTheme.bodySmall`, if not defined.
   final TextStyle? pickerTypeTextStyle;
 
   /// A [ColorPickerType] to String map that contains labels for the picker
@@ -655,8 +685,13 @@ class ColorPicker extends StatefulWidget {
   ///
   /// The [showPickerDialog] method is a convenience function to show the
   /// [ColorPicker] widget in a modal dialog. It re-implements the standard
-  /// `showDialog` function with opinionated Cancel and OK buttons. It
-  /// also by default uses a lighter barrier color. This is useful if the
+  /// [showDialog] function with opinionated Cancel and OK buttons.
+  ///
+  /// If a [transitionBuilder] is provided the [showPickerDialog] instead uses
+  /// a [showGeneralDialog] implementation to show the [ColorPicker], this
+  /// allows for customization of the show animation.
+  ///
+  /// It also by default uses a lighter barrier color. This is useful if the
   /// color picker is used to dynamically change color of a widget or entire
   /// application theme, since we can then better see the impact of the color
   /// choice behind the modal dialog when the barrier is made almost fully
@@ -671,7 +706,6 @@ class ColorPicker extends StatefulWidget {
   Future<bool> showPickerDialog(
     /// The dialog requires a BuildContext.
     BuildContext context, {
-
     /// Title of the color picker dialog, often omitted in favor of using a
     /// [title] and/or [heading] already defined in the [ColorPicker].
     Widget? title,
@@ -684,7 +718,7 @@ class ColorPicker extends StatefulWidget {
     /// Style for the text in the [title] of this [AlertDialog].
     ///
     /// If null, [DialogTheme.titleTextStyle] is used. If that's null,
-    /// defaults to [TextTheme.headline6] of [ThemeData.textTheme].
+    /// defaults to [TextTheme.titleLarge] of [ThemeData.textTheme].
     final TextStyle? titleTextStyle,
 
     /// Padding around the content in the dialog.
@@ -699,17 +733,25 @@ class ColorPicker extends StatefulWidget {
     /// Typically used to provide padding to the button bar between the button
     /// bar and the edges of the dialog.
     ///
-    /// Defaults to `EdgeInsets.symmetric(horizontal: 16)`.
-    final EdgeInsetsGeometry actionsPadding =
-        const EdgeInsets.symmetric(horizontal: 16),
+    /// Defaults to null and follows ambient [AlertDialog] themed actions
+    /// padding or [AlertDialog] default if not defined.
+    ///
+    /// Versions before FlexColorPicker 3.0.0 defaulted to
+    /// `EdgeInsets.symmetric(horizontal: 16) use it for same padding as in
+    /// previous versions.
+    final EdgeInsetsGeometry? actionsPadding,
 
     /// The padding that surrounds each bottom action button.
     ///
     /// This is different from [actionsPadding], which defines the padding
     /// between the entire button bar and the edges of the dialog.
     ///
-    /// Defaults to `EdgeInsets.all(16)`.
-    final EdgeInsetsGeometry buttonPadding = const EdgeInsets.all(16),
+    /// Defaults to null and follows ambient [AlertDialog] themed buttons
+    /// padding or [AlertDialog] default if not defined.
+    ///
+    /// Versions before FlexColorPicker 3.0.0 defaulted to `EdgeInsets.all(16),
+    /// use it for same button padding as in previous versions.
+    final EdgeInsetsGeometry? buttonPadding,
 
     /// The background color of the surface of this Dialog.
     ///
@@ -776,11 +818,6 @@ class ColorPicker extends StatefulWidget {
     /// The default shape is a RoundedRectangleBorder with a radius of 4.0.
     final ShapeBorder? shape,
 
-    /// If true, the dialog can be closed by clicking outside it.
-    ///
-    /// Defaults to true.
-    bool barrierDismissible = true,
-
     /// The background transparency color of the dialog barrier.
     ///
     /// Defaults to [Colors.black12] which is considerably lighter than the
@@ -792,6 +829,15 @@ class ColorPicker extends StatefulWidget {
     /// You can also make the barrier completely transparent.
     Color barrierColor = Colors.black12,
 
+    /// If true, the dialog can be closed by clicking outside it.
+    ///
+    /// Defaults to true.
+    bool barrierDismissible = true,
+
+    /// The `barrierLabel` argument is the semantic label used for a dismissible
+    /// barrier. This argument defaults to `null`.
+    String? barrierLabel,
+
     /// The `useSafeArea` argument is used to indicate if the dialog should only
     /// display in 'safe' areas of the screen not used by the operating system
     /// (see [SafeArea] for more details).
@@ -801,38 +847,27 @@ class ColorPicker extends StatefulWidget {
     /// be constrained by the screen size.
     bool useSafeArea = true,
 
-    /// Usage of `useRootNavigator` here is deprecated.
-    ///
-    /// The `useRootNavigator` argument is now respected on all Navigator
-    /// pop functions used in the [ColorPicker] widget itself and by
-    /// built-in dialogs used by the [ColorPicker]. In order to support this,
-    /// the current `useRootNavigator` property in the
-    /// [ColorPicker.showPickerDialog] and in the function
-    /// [showColorPickerDialog] had to be deprecated.
-    ///
-    /// The property has moved to become a configuration option in
-    /// [ColorPickerActionButtons] class in order to make it accessible to
-    /// the Navigator pop functions both in the [ColorPicker] widget itself,
-    /// as well as by built-in dialogs.
-    ///
-    /// The default behavior has not been changed, the setting still defaults
-    /// to using dialogs that use the root navigator, but now the pop
-    /// functions work as intended.
-    ///
-    /// If you for some reason have used none root navigators for the built-in
-    /// dialogs in previous version, you need to set
-    /// `ColorPickerActionButtons(useRootNavigator: false)` in
-    /// `ColorPicker(actionButtons)` or `showColorPickerDialog(actionButtons)`.
-    @Deprecated(
-      'This property is no longer set here and has no function if assigned '
-      'here. From version 2.1.0 it must be defined via same property in '
-      'configuration class ColorPickerActionButtons(useRootNavigator).',
-    )
-        bool useRootNavigator = true,
-
     /// The `routeSettings` argument is passed to [showGeneralDialog],
     /// see [RouteSettings] for details.
     RouteSettings? routeSettings,
+
+    /// Offset anchorPoint for the dialog.
+    Offset? anchorPoint,
+
+    /// The [transitionBuilder] argument is used to define how the route
+    /// arrives on and leaves off the screen.
+    ///
+    /// If this transition is not specified, the default Material platform
+    /// transition builder for [showDialog] is used.
+    RouteTransitionsBuilder? transitionBuilder,
+
+    /// The [transitionDuration] argument is used to determine how long it takes
+    /// for the route to arrive on or leave off the screen.
+    ///
+    /// It only has any effect when a custom `transitionBuilder`is used.
+    ///
+    /// This argument defaults to 200 milliseconds.
+    Duration transitionDuration = const Duration(milliseconds: 200),
 
     /// You can provide BoxConstraints to constrain the size of the dialog.
     ///
@@ -947,46 +982,108 @@ class ColorPicker extends StatefulWidget {
     // False if dialog cancelled, true if color selected
     bool colorWasSelected = false;
 
-    await showDialog<bool>(
+    // Determine OK-Cancel button order.
+    final TargetPlatform platform = Theme.of(context).platform;
+    final bool okIsLeft = (platform == TargetPlatform.windows &&
+            actionButtons.dialogActionOrder ==
+                ColorPickerActionButtonOrder.adaptive) ||
+        actionButtons.dialogActionOrder ==
+            ColorPickerActionButtonOrder.okIsLeft;
+
+    // Put or [ColorPicker] instance `this` in an `AlertDialog` using all
+    // to it assigned and above defined properties.
+    Widget dialog = AlertDialog(
+      title: title,
+      titlePadding: titlePadding,
+      titleTextStyle: titleTextStyle,
+      content: constraints == null
+          ? this
+          : ConstrainedBox(
+              constraints: constraints,
+              child: this,
+            ),
+      contentPadding: contentPadding,
+      actions: actionButtons.dialogActionButtons
+          ? <Widget>[
+              if (okIsLeft) ...<Widget>[
+                okButton,
+                cancelButton,
+              ] else ...<Widget>[
+                cancelButton,
+                okButton,
+              ]
+            ]
+          : null,
+      actionsPadding: actionsPadding,
+      buttonPadding: buttonPadding,
+      backgroundColor: backgroundColor,
+      elevation: elevation,
+      semanticLabel: semanticLabel,
+      insetPadding: insetPadding,
+      clipBehavior: clipBehavior,
+      shape: shape,
+      scrollable: true,
+    );
+
+    // No `transitionBuilder` give, then use
+    // the platform and Material2/3 dependent default MaterialPage route
+    // transition via `showDialog`, as in all versions before 3.0.0.
+    if (transitionBuilder == null) {
+      await showDialog<bool>(
+          context: context,
+          barrierDismissible: barrierDismissible,
+          barrierColor: barrierColor,
+          barrierLabel: barrierLabel,
+          useSafeArea: useSafeArea,
+          useRootNavigator: actionButtons.useRootNavigator,
+          routeSettings: routeSettings,
+          anchorPoint: anchorPoint,
+          builder: (BuildContext context) {
+            return dialog;
+          }).then((bool? value) {
+        // If the dialog return value was null, then we got here by a
+        // barrier dismiss, then we set the return value to false.
+        colorWasSelected = value ?? false;
+      });
+    }
+    // If a `transitionBuilder` is given, we use `showGeneralDialog` using the
+    // given `transitionBuilder` and a custom `pageBuilder`, conditionally
+    // wrapping `SafeArea` around or AlertDialog widget and capturing the
+    // current theme that we and wrapping it around the page builder.
+    else {
+      final CapturedThemes themes = InheritedTheme.capture(
+        from: context,
+        to: Navigator.of(
+          context,
+          rootNavigator: true,
+        ).context,
+      );
+      if (useSafeArea) {
+        dialog = SafeArea(child: dialog);
+      }
+      await showGeneralDialog<bool>(
         context: context,
         barrierDismissible: barrierDismissible,
         barrierColor: barrierColor,
-        useSafeArea: useSafeArea,
+        barrierLabel: barrierLabel ??
+            MaterialLocalizations.of(context).modalBarrierDismissLabel,
         useRootNavigator: actionButtons.useRootNavigator,
         routeSettings: routeSettings,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: title,
-            titlePadding: titlePadding,
-            titleTextStyle: titleTextStyle,
-            content: constraints == null
-                ? this
-                : ConstrainedBox(
-                    constraints: constraints,
-                    child: this,
-                  ),
-            contentPadding: contentPadding,
-            actions: actionButtons.dialogActionButtons
-                ? <Widget>[
-                    cancelButton,
-                    okButton,
-                  ]
-                : null,
-            actionsPadding: actionsPadding,
-            buttonPadding: buttonPadding,
-            backgroundColor: backgroundColor,
-            elevation: elevation,
-            semanticLabel: semanticLabel,
-            insetPadding: insetPadding,
-            clipBehavior: clipBehavior,
-            shape: shape,
-            scrollable: true,
-          );
-        }).then((bool? value) {
-      // If the dialog return value was null, then we got here by a
-      // barrier dismiss, then we set the return value to false.
-      colorWasSelected = value ?? false;
-    });
+        anchorPoint: anchorPoint,
+        transitionBuilder: transitionBuilder,
+        transitionDuration: transitionDuration,
+        pageBuilder: (BuildContext context, Animation<double> animation1,
+            Animation<double> animation2) {
+          return themes.wrap(Builder(
+            builder: (BuildContext context) => dialog,
+          ));
+        },
+      ).then((bool? value) {
+        // If the dialog return value was null, then we got here by a
+        // barrier dismiss, then we set the return value to false.
+        colorWasSelected = value ?? false;
+      });
+    }
     return colorWasSelected;
   }
 }
@@ -1004,7 +1101,7 @@ class _ColorPickerState extends State<ColorPicker> {
   late List<ColorSwatch<Object>> _activeColorSwatchList;
 
   // The active Swatch in the active Color swatch List. Can be null temporarily
-  // when we searched for a color in a swatched but did not find it anywhere.
+  // when we searched for a color in a swatch but did not find it anywhere.
   ColorSwatch<Object>? _activeSwatch;
 
   // Which picker are we using now.
@@ -1035,7 +1132,7 @@ class _ColorPickerState extends State<ColorPicker> {
   bool _wheelShouldUpdate = true;
 
   // The tonal picker should only update its tonal palette whe we click on
-  // colors in other color pciker, not when we select a color in the
+  // colors in other color picker, not when we select a color in the
   // tonal palette. This local state is used to send the update signal.
   bool _tonalShouldUpdate = true;
 
@@ -1142,15 +1239,18 @@ class _ColorPickerState extends State<ColorPicker> {
 
   @override
   void didUpdateWidget(ColorPicker oldWidget) {
-    // debugPrint('didUpdateWidget called **********************************');
-
+    if (_debug) {
+      debugPrint('didUpdateWidget called **********************************');
+    }
     // Set to true if a change was done where we need to find the picker again.
     bool shouldFindPickerAndSwatch = false;
 
     // Opacity enable/disable changed, update selected color and opacity.
     if (widget.enableOpacity != oldWidget.enableOpacity) {
-      // debugPrint('didUpdateWidget enableOpacity = '
-      //     '${widget.enableOpacity == oldWidget.enableOpacity}');
+      if (_debug) {
+        debugPrint('didUpdateWidget enableOpacity = '
+            '${widget.enableOpacity == oldWidget.enableOpacity}');
+      }
       _selectedColor =
           widget.enableOpacity ? widget.color : widget.color.withAlpha(0xFF);
       _opacity = widget.enableOpacity ? widget.color.opacity : 1;
@@ -1158,8 +1258,12 @@ class _ColorPickerState extends State<ColorPicker> {
 
     // Picker labels map changed, update used one, with its default fallbacks.
     if (!mapEquals(widget.pickerTypeLabels, oldWidget.pickerTypeLabels)) {
-      // debugPrint('didUpdateWidget pickerTypeLabels mapEquals: '
-      //  '${mapEquals(widget.pickerTypeLabels, oldWidget.pickerTypeLabels)}');
+      if (_debug) {
+        debugPrint(
+          'didUpdateWidget pickerTypeLabels mapEquals: '
+          '${mapEquals(widget.pickerTypeLabels, oldWidget.pickerTypeLabels)}',
+        );
+      }
       _pickerLabels = <ColorPickerType, String>{
         ColorPickerType.both: widget.pickerTypeLabels[ColorPickerType.both] ??
             ColorPicker._selectBothLabel,
@@ -1200,8 +1304,9 @@ class _ColorPickerState extends State<ColorPicker> {
       // Therefore using `toString` comparisons for now to get around the issue,
       // not ideal, but it seems to work.
 
-      // debugPrint('didUpdateWidget pickersEnabled or custom swatch updated!');
-
+      if (_debug) {
+        debugPrint('didUpdateWidget pickersEnabled or custom swatch updated!');
+      }
       // Update _typeToSwatchMap, because custom color swatches were updated.
       _typeToSwatchMap = <ColorPickerType, List<ColorSwatch<Object>>>{
         ColorPickerType.both: ColorTools.primaryAndAccentColors,
@@ -1233,9 +1338,10 @@ class _ColorPickerState extends State<ColorPicker> {
         ColorPickerType.wheel:
             widget.pickersEnabled[ColorPickerType.wheel] ?? false,
       };
-      // debugPrint('${widget.customColorSwatchesAndNames}');
-      // debugPrint('${oldWidget.customColorSwatchesAndNames}');
-
+      if (_debug) {
+        debugPrint('${widget.customColorSwatchesAndNames}');
+        debugPrint('${oldWidget.customColorSwatchesAndNames}');
+      }
       // We should find picker and swatch after above updates.
       shouldFindPickerAndSwatch = true;
     }
@@ -1250,7 +1356,9 @@ class _ColorPickerState extends State<ColorPicker> {
     // The widget color was updated externally since it differs from internally
     // kept state, we should update the widget to new color and find picker.
     if (widget.color != _selectedColor) {
-      // debugPrint('didUpdateWidget external color update!');
+      if (_debug) {
+        debugPrint('didUpdateWidget external color update!');
+      }
       _selectedColor =
           widget.enableOpacity ? widget.color : widget.color.withAlpha(0xFF);
       _opacity = widget.enableOpacity ? widget.color.opacity : 1;
@@ -1268,8 +1376,9 @@ class _ColorPickerState extends State<ColorPicker> {
     }
     //
     if (shouldFindPickerAndSwatch) {
-      // debugPrint('didUpdateWidget calls findPicker and updateActiveSwatch');
-
+      if (_debug) {
+        debugPrint('didUpdateWidget calls findPicker and updateActiveSwatch');
+      }
       // When in this IF branch, we need to find the right picker again.
       _findPicker();
       // And also update the active swatch again.
@@ -1393,15 +1502,15 @@ class _ColorPickerState extends State<ColorPicker> {
     // The effective used text style, if null was passed in we assign defaults.
     final TextStyle effectiveMaterialNameStyle =
         (widget.materialNameTextStyle ??
-                Theme.of(context).textTheme.bodyText2) ??
+                Theme.of(context).textTheme.bodyMedium) ??
             const TextStyle();
     final TextStyle effectiveGenericNameStyle =
-        (widget.colorNameTextStyle ?? Theme.of(context).textTheme.bodyText2) ??
+        (widget.colorNameTextStyle ?? Theme.of(context).textTheme.bodyMedium) ??
             const TextStyle();
 
-    // Set the default integer code value text style to bodyText2 if not given.
+    // Set the default integer code value text style to bodyMedium if not given.
     final TextStyle effectiveCodeStyle =
-        (widget.colorCodeTextStyle ?? Theme.of(context).textTheme.bodyText2) ??
+        (widget.colorCodeTextStyle ?? Theme.of(context).textTheme.bodyMedium) ??
             const TextStyle();
 
     // The logic below is used to determine if we will have a context menu
@@ -1411,13 +1520,18 @@ class _ColorPickerState extends State<ColorPicker> {
         widget.copyPasteBehavior.secondaryOnDesktopLongOnDevice ||
         widget.copyPasteBehavior.secondaryOnDesktopLongOnDeviceAndWeb;
 
-    // Build and return the layout.
+    // Should keyboard listener grab focus? If neither copy and paste keyboard
+    // shortcuts are enabled, there is no need to autofocus, so let's skip it
+    // then too, regardless of autofocus setting.
+    final bool autoFocus = widget.copyPasteBehavior.autoFocus &&
+        (widget.copyPasteBehavior.ctrlC || widget.copyPasteBehavior.ctrlV);
+
     // We start with a RawKeyboardListener that is used to handle keyboard
     // copy and paste events.
     return RawKeyboardListener(
       focusNode: _focusNode,
       onKey: _handleKeyEvent,
-      autofocus: true,
+      autofocus: autoFocus,
       // If the Copy-Paste context menu feature is enabled we wrap the
       // entire color picker with a Copy-Paste context menu, if it is not
       // enabled, it is not a part of the widget tree at all.
@@ -1591,6 +1705,8 @@ class _ColorPickerState extends State<ColorPicker> {
                     child: ColorWheelPicker(
                       color: _selectedColor.withAlpha(0xFF),
                       wheelWidth: widget.wheelWidth,
+                      wheelSquarePadding: widget.wheelSquarePadding,
+                      wheelSquareBorderRadius: widget.wheelSquareBorderRadius,
                       hasBorder: widget.wheelHasBorder,
                       borderColor: widget.borderColor,
                       shouldUpdate: _wheelShouldUpdate,
@@ -1692,9 +1808,9 @@ class _ColorPickerState extends State<ColorPicker> {
                     });
                   },
                   tonalShouldUpdate: _tonalShouldUpdate,
-                  width: (widget.width + widget.spacing) * 10 / 13 -
+                  width: (widget.width + widget.spacing) * 10 / 15 -
                       widget.spacing,
-                  height: (widget.width + widget.spacing) * 10 / 13 -
+                  height: (widget.width + widget.spacing) * 10 / 15 -
                       widget.spacing,
                   borderRadius: widget.borderRadius,
                   hasBorder: widget.hasBorder,
@@ -1983,7 +2099,9 @@ class _ColorPickerState extends State<ColorPicker> {
     //
     // Found the usage of these in the SDK TextField copy/paste implementation.
     final bool isRawKeyMacOS = event.data is RawKeyEventDataMacOs;
-    // debugPrint('KeyEvent isRawKeyMacOS: $isRawKeyMacOS');
+    if (_debug) {
+      debugPrint('KeyEvent isRawKeyMacOS: $isRawKeyMacOS');
+    }
     final bool isRawKeyIos = event.data is RawKeyEventDataIos;
     // **BUT**
     // The above RawKeyEventData did not seem to work on Web when using an

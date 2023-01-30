@@ -6,7 +6,7 @@ import '../../../widgets/maybe_tooltip.dart';
 
 @immutable
 class PaddingSlider extends ConsumerWidget {
-  const PaddingSlider({Key? key}) : super(key: key);
+  const PaddingSlider({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -14,15 +14,16 @@ class PaddingSlider extends ConsumerWidget {
       condition: ref.watch(enableTooltipsPod),
       // ignore: missing_whitespace_between_adjacent_strings
       tooltip: 'ColorPicker(padding: EdgeInsets.all'
-          '(${ref.read(paddingPod).floor().toString()}))',
+          '(${ref.read(paddingPod).floor()}))',
       child: ListTile(
         title: const Text('Color picker content padding'),
-        subtitle: Slider.adaptive(
+        subtitle: Slider(
           max: 40,
           divisions: 40,
-          label: ref.read(paddingPod).floor().toString(),
+          label: ref.watch(paddingPod).floor().toString(),
           value: ref.watch(paddingPod),
-          onChanged: (double value) => ref.read(paddingPod.state).state = value,
+          onChanged: (double value) =>
+              ref.read(paddingPod.notifier).state = value,
         ),
         trailing: Padding(
           padding: const EdgeInsets.only(right: 12),

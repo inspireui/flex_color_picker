@@ -1,7 +1,15 @@
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+
+// Set the bool flag to true to show debug prints. Even if it is forgotten
+// to set it to false, debug prints will not show in release builds.
+// The handy part is that if it gets in the way in debugging, it is an easy
+// toggle to turn it off there too. Often I just leave them true if it is one
+// I want to see in dev mode, unless it is too chatty.
+const bool _debug = !kReleaseMode && false;
 
 /// A HSV color wheel based color picker for Flutter, used by FlexColorPicker.
 ///
@@ -12,20 +20,21 @@ import 'package:flutter/material.dart';
 class ColorWheelPicker extends StatefulWidget {
   /// Default constructor for the color wheel picker.
   const ColorWheelPicker({
-    Key? key,
+    super.key,
     required this.color,
     required this.onChanged,
     this.onChangeStart,
     this.onChangeEnd,
     required this.onWheel,
     this.wheelWidth = 16.0,
+    this.wheelSquarePadding = 0,
+    this.wheelSquareBorderRadius = 4,
     this.hasBorder = false,
     this.borderColor,
     this.shouldUpdate = false,
     this.shouldRequestsFocus = false,
-  })  : assert(wheelWidth >= 4 && wheelWidth <= 50,
-            'The Wheel must be between 4 and 50dp'),
-        super(key: key);
+  }) : assert(wheelWidth >= 4 && wheelWidth <= 50,
+            'The Wheel must be between 4 and 50dp');
 
   /// The starting color value for the wheel color picker.
   final Color color;
@@ -51,6 +60,17 @@ class ColorWheelPicker extends StatefulWidget {
 
   /// The width of the color wheel in dp.
   final double wheelWidth;
+
+  /// Padding between shade square inside the hue wheel and inner
+  /// side of the wheel.
+  ///
+  /// Defaults to 0 dp.
+  final double wheelSquarePadding;
+
+  /// Border radius of the shade square inside the hue wheel.
+  ///
+  /// Defaults to 4 dp.
+  final double wheelSquareBorderRadius;
 
   /// Set to true to draw a border around the color controls.
   ///
@@ -92,6 +112,9 @@ class _ColorWheelPickerState extends State<ColorWheelPicker> {
   late double colorSaturation;
   late double colorValue;
 
+  // Previous widget color value, stored to avoid double call in onEnd.
+  late Color previousColor;
+
   // Used to set focus to the Focus() we wrap around our custom paint.
   late FocusNode _focusNode;
 
@@ -99,6 +122,7 @@ class _ColorWheelPickerState extends State<ColorWheelPicker> {
   void initState() {
     super.initState();
     colorHue = color.hue;
+    previousColor = widget.color;
     colorSaturation = color.saturation;
     colorValue = color.value;
     _focusNode = FocusNode();
@@ -135,19 +159,23 @@ class _ColorWheelPickerState extends State<ColorWheelPicker> {
         colorValue = color.value;
       }
     }
+    if (oldWidget.color != widget.color) {
+      previousColor = widget.color;
+    }
   }
 
   // Get the widget color, but convert to HSV color that we need internally
   HSVColor get color => HSVColor.fromColor(widget.color);
   // Get the radius of the wheel, it is half of the shortest side of the
   // surrounding rectangle minus the defined width of the color wheel.
-  double wheelRadius(Size size) =>
-      math.min(size.width, size.height) / 2 - widget.wheelWidth;
-  double squareRadius(double radius) =>
-      (radius - widget.wheelWidth / 2) / math.sqrt(2);
+  double wheelRadius(Size size, double wheelWidth) =>
+      math.min(size.width, size.height) / 2 - wheelWidth;
+  static double squareRadius(
+          double radius, double wheelWidth, double wheelSquarePadding) =>
+      (radius - wheelWidth / 2 - wheelSquarePadding) / math.sqrt(2);
 
   Offset getOffset(Offset ratio) {
-    // This is bang and cast is not pretty, but SDK does it this was too.
+    // This is bang and cast is not pretty, but SDK does it this way too.
     final RenderBox renderBox =
         renderBoxKey.currentContext!.findRenderObject()! as RenderBox;
 
@@ -157,16 +185,27 @@ class _ColorWheelPickerState extends State<ColorWheelPicker> {
 
   // Called when we start dragging any of the thumbs on the wheel or square
   void onStart(Offset offset) {
-    // This is bang and cast is not pretty, but SDK does it this was too.
+    // This is bang and cast is not pretty, but SDK does it this way too.
     final RenderBox renderBox =
         renderBoxKey.currentContext!.findRenderObject()! as RenderBox;
 
     final Size size = renderBox.size;
-    final double radius = wheelRadius(size);
-    final double effectiveSquareRadius = squareRadius(radius);
+    final double radius = wheelRadius(size, widget.wheelWidth);
+    final double effectiveSquareRadius =
+        squareRadius(radius, widget.wheelWidth, widget.wheelSquarePadding);
     final Offset startPosition = renderBox.localToGlobal(Offset.zero);
     final Offset center = Offset(size.width / 2, size.height / 2);
     final Offset vector = offset - startPosition - center;
+
+    if (_debug) {
+      debugPrint('--------------------------------------------------');
+      debugPrint('size....................: $size');
+      debugPrint('radius..................: $radius');
+      debugPrint('effectiveSquareRadius...: $effectiveSquareRadius');
+      debugPrint('startPosition...........: $startPosition');
+      debugPrint('center..................: $center');
+      debugPrint('vector..................: $vector');
+    }
 
     // We are operating the wheel, so onWheel is true.
     widget.onWheel(true);
@@ -218,8 +257,9 @@ class _ColorWheelPickerState extends State<ColorWheelPicker> {
         renderBoxKey.currentContext!.findRenderObject()! as RenderBox;
 
     final Size size = renderBox.size;
-    final double radius = wheelRadius(size);
-    final double effectiveSquareRadius = squareRadius(radius);
+    final double radius = wheelRadius(size, widget.wheelWidth);
+    final double effectiveSquareRadius =
+        squareRadius(radius, widget.wheelWidth, widget.wheelSquarePadding);
     final Offset startPosition = renderBox.localToGlobal(Offset.zero);
     final Offset center = Offset(size.width / 2, size.height / 2);
     final Offset vector = offset - startPosition - center;
@@ -265,8 +305,10 @@ class _ColorWheelPickerState extends State<ColorWheelPicker> {
     // We are ending the dragging operation, call the onChangeEnd callback
     // with the color we ended up with.
     widget.onChangeEnd?.call(widget.color);
-    // We have to call onChanged once more with final value as well.
-    widget.onChanged(widget.color);
+    // We have to call onChanged once more with final value as well,
+    // but only if it has changed internally since last call, otherwise
+    // we have already called it once before with that value.
+    if (widget.color != previousColor) widget.onChanged(widget.color);
   }
 
   @override
@@ -322,6 +364,8 @@ class _ColorWheelPickerState extends State<ColorWheelPicker> {
                       borderColor:
                           widget.borderColor ?? Theme.of(context).dividerColor,
                       wheelWidth: widget.wheelWidth,
+                      wheelSquarePadding: widget.wheelSquarePadding,
+                      wheelBorderRadius: widget.wheelSquareBorderRadius,
                     ),
                   ),
                 ),
@@ -329,6 +373,8 @@ class _ColorWheelPickerState extends State<ColorWheelPicker> {
                   painter: _ShadeThumbPainter(
                     colorSaturation: colorSaturation,
                     colorValue: colorValue,
+                    wheelWidth: widget.wheelWidth,
+                    wheelSquarePadding: widget.wheelSquarePadding,
                   ),
                 ),
                 RepaintBoundary(
@@ -364,7 +410,9 @@ class _ShadePainter extends CustomPainter {
     required this.colorValue,
     this.hasBorder = false,
     required this.borderColor,
-    this.wheelWidth = 16,
+    required this.wheelWidth,
+    required this.wheelSquarePadding,
+    required this.wheelBorderRadius,
   }) : super();
 
   final double colorHue; // Color wheel coordinate 0...360 degrees
@@ -374,17 +422,21 @@ class _ShadePainter extends CustomPainter {
   final bool hasBorder;
   final Color borderColor;
   final double wheelWidth;
+  final double wheelSquarePadding;
+  final double wheelBorderRadius;
 
   static double wheelRadius(Size size, double wheelWidth) =>
       math.min(size.width, size.height) / 2 - wheelWidth / 2;
-  static double squareRadius(double radius, double wheelWidth) =>
-      (radius - wheelWidth / 2) / math.sqrt(2);
+  static double squareRadius(
+          double radius, double wheelWidth, double wheelSquarePadding) =>
+      (radius - wheelWidth / 2 - wheelSquarePadding) / math.sqrt(2);
 
   @override
   void paint(Canvas canvas, Size size) {
     final Offset center = Offset(size.width / 2, size.height / 2);
     final double radius = wheelRadius(size, wheelWidth);
-    final double effectiveSquareRadius = squareRadius(radius, wheelWidth);
+    final double effectiveSquareRadius =
+        squareRadius(radius, wheelWidth, wheelSquarePadding);
 
     // Draw the color shade palette.
     final Rect rectBox = Rect.fromLTWH(
@@ -393,7 +445,7 @@ class _ShadePainter extends CustomPainter {
         effectiveSquareRadius * 2,
         effectiveSquareRadius * 2);
     final RRect rRect =
-        RRect.fromRectAndRadius(rectBox, const Radius.circular(4));
+        RRect.fromRectAndRadius(rectBox, Radius.circular(wheelBorderRadius));
 
     final Shader horizontal = LinearGradient(
       colors: <Color>[
@@ -433,6 +485,8 @@ class _ShadePainter extends CustomPainter {
     return oldDelegate.hasBorder != hasBorder ||
         oldDelegate.borderColor != borderColor ||
         oldDelegate.wheelWidth != wheelWidth ||
+        oldDelegate.wheelSquarePadding != wheelSquarePadding ||
+        oldDelegate.wheelBorderRadius != wheelBorderRadius ||
         oldDelegate.colorHue != colorHue ||
         oldDelegate.colorSaturation != colorSaturation ||
         oldDelegate.colorValue != colorValue;
@@ -444,7 +498,7 @@ class _WheelPainter extends CustomPainter {
     this.hasBorder = false,
     required this.borderColor,
     this.ticks = 360,
-    this.wheelWidth = 16,
+    required this.wheelWidth,
   }) : super();
 
   final bool hasBorder;
@@ -524,24 +578,27 @@ class _ShadeThumbPainter extends CustomPainter {
   const _ShadeThumbPainter({
     required this.colorSaturation,
     required this.colorValue,
-    this.wheelWidth = 16,
+    required this.wheelWidth,
+    required this.wheelSquarePadding,
   }) : super();
 
   final double colorSaturation; // The X coordinate 0...1
   final double colorValue; // The Y coordinate 0...1
-
   final double wheelWidth;
+  final double wheelSquarePadding;
 
   static double wheelRadius(Size size, double wheelWidth) =>
       math.min(size.width, size.height) / 2 - wheelWidth / 2;
-  static double squareRadius(double radius, double wheelWidth) =>
-      (radius - wheelWidth / 2) / math.sqrt(2);
+  static double squareRadius(
+          double radius, double wheelWidth, double wheelSquarePadding) =>
+      (radius - wheelWidth / 2 - wheelSquarePadding) / math.sqrt(2);
 
   @override
   void paint(Canvas canvas, Size size) {
     final Offset center = Offset(size.width / 2, size.height / 2);
     final double radius = wheelRadius(size, wheelWidth);
-    final double effectiveSquareRadius = squareRadius(radius, wheelWidth);
+    final double effectiveSquareRadius =
+        squareRadius(radius, wheelWidth, wheelSquarePadding);
 
     // Define paint style for the selection thumbs:
     // Outer black circle.
@@ -573,18 +630,19 @@ class _ShadeThumbPainter extends CustomPainter {
   bool shouldRepaint(_ShadeThumbPainter oldDelegate) {
     return oldDelegate.wheelWidth != wheelWidth ||
         oldDelegate.colorSaturation != colorSaturation ||
-        oldDelegate.colorValue != colorValue;
+        oldDelegate.colorValue != colorValue ||
+        oldDelegate.wheelWidth != wheelWidth ||
+        oldDelegate.wheelSquarePadding != wheelSquarePadding;
   }
 }
 
 class _WheelThumbPainter extends CustomPainter {
   const _WheelThumbPainter({
     required this.colorHue,
-    this.wheelWidth = 16,
+    required this.wheelWidth,
   }) : super();
 
   final double colorHue; // Color wheel coordinate 0...360 degrees
-
   final double wheelWidth;
 
   static double wheelRadius(Size size, double wheelWidth) =>

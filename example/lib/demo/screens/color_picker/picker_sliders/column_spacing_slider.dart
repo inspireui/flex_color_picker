@@ -6,23 +6,23 @@ import '../../../widgets/maybe_tooltip.dart';
 
 @immutable
 class ColumnSpacingSlider extends ConsumerWidget {
-  const ColumnSpacingSlider({Key? key}) : super(key: key);
+  const ColumnSpacingSlider({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaybeTooltip(
       condition: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(columnSpacing: '
-          '${ref.read(columnSpacingPod).floor().toString()})',
+          '${ref.read(columnSpacingPod).floor()})',
       child: ListTile(
         title: const Text('Vertical spacing between items'),
-        subtitle: Slider.adaptive(
+        subtitle: Slider(
           max: 40,
           divisions: 40,
-          label: ref.read(columnSpacingPod).floor().toString(),
+          label: ref.watch(columnSpacingPod).floor().toString(),
           value: ref.watch(columnSpacingPod),
           onChanged: (double value) =>
-              ref.read(columnSpacingPod.state).state = value,
+              ref.read(columnSpacingPod.notifier).state = value,
         ),
         trailing: Padding(
           padding: const EdgeInsets.only(right: 12),

@@ -6,7 +6,7 @@ import '../../../widgets/switch_tile_tooltip.dart';
 
 @immutable
 class EditUsesParsedPasteSwitch extends ConsumerWidget {
-  const EditUsesParsedPasteSwitch({Key? key}) : super(key: key);
+  const EditUsesParsedPasteSwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,7 +16,7 @@ class EditUsesParsedPasteSwitch extends ConsumerWidget {
           'This feature only applies to desktop keyboard shortcuts.'),
       value: ref.watch(editUsesParsedPastePod),
       onChanged: (bool value) =>
-          ref.read(editUsesParsedPastePod.state).state = value,
+          ref.read(editUsesParsedPastePod.notifier).state = value,
       tooltipEnabled: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(copyPasteBehavior:\n'
           '  ColorPickerCopyPasteBehavior(editUsesParsedPaste: '

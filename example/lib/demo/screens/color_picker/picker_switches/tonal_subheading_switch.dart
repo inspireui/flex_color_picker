@@ -6,7 +6,7 @@ import '../../../widgets/switch_tile_tooltip.dart';
 
 @immutable
 class TonalSubheadingSwitch extends ConsumerWidget {
-  const TonalSubheadingSwitch({Key? key}) : super(key: key);
+  const TonalSubheadingSwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,7 +16,7 @@ class TonalSubheadingSwitch extends ConsumerWidget {
           ' widget, if it is null there is no tonal subheading.'),
       value: ref.watch(showTonalSubheadingPod),
       onChanged: (bool value) =>
-          ref.read(showTonalSubheadingPod.state).state = value,
+          ref.read(showTonalSubheadingPod.notifier).state = value,
       tooltipEnabled: ref.watch(enableTooltipsPod),
       tooltip: ref.read(showTonalSubheadingPod)
           ? "ColorPicker(tonalSubheading: Text('Material 3 tonal palette'))"

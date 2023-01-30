@@ -6,23 +6,23 @@ import '../../../widgets/maybe_tooltip.dart';
 
 @immutable
 class BorderRadiusSlider extends ConsumerWidget {
-  const BorderRadiusSlider({Key? key}) : super(key: key);
+  const BorderRadiusSlider({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaybeTooltip(
       condition: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(borderRadius: '
-          '${ref.read(borderRadiusPod).floor().toString()})',
+          '${ref.read(borderRadiusPod).floor()})',
       child: ListTile(
         title: const Text('Color picker item border radius'),
-        subtitle: Slider.adaptive(
+        subtitle: Slider(
           max: ref.watch(sizePod) / 2,
           divisions: (ref.read(sizePod) / 2).floor(),
-          label: ref.read(borderRadiusPod).floor().toString(),
+          label: ref.watch(borderRadiusPod).floor().toString(),
           value: ref.watch(borderRadiusPod),
           onChanged: (double value) =>
-              ref.read(borderRadiusPod.state).state = value,
+              ref.read(borderRadiusPod.notifier).state = value,
         ),
         trailing: Padding(
           padding: const EdgeInsets.only(right: 12),

@@ -6,7 +6,7 @@ import '../../../widgets/switch_tile_tooltip.dart';
 
 @immutable
 class SecondaryDesktopLongWebDeviceSwitch extends ConsumerWidget {
-  const SecondaryDesktopLongWebDeviceSwitch({Key? key}) : super(key: key);
+  const SecondaryDesktopLongWebDeviceSwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,7 +15,7 @@ class SecondaryDesktopLongWebDeviceSwitch extends ConsumerWidget {
           'right click on desktops'),
       value: ref.watch(secondaryDesktopWebLongPod),
       onChanged: (bool value) =>
-          ref.read(secondaryDesktopWebLongPod.state).state = value,
+          ref.read(secondaryDesktopWebLongPod.notifier).state = value,
       tooltipEnabled: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(copyPasteBehavior:\n'
           '  ColorPickerCopyPasteBehavior(\n'

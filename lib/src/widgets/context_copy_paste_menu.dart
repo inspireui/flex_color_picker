@@ -1,3 +1,5 @@
+// ignore_for_file: use_super_parameters
+
 import 'package:flutter/material.dart';
 
 import '../universal_widgets/context_popup_menu.dart';
@@ -126,7 +128,7 @@ class ContextCopyPasteMenu extends StatelessWidget {
   ///            side: BorderSide(
   ///            color: theme.dividerColor))
   ///   elevation: 3
-  ///   textStyle: theme.textTheme.bodyText2
+  ///   textStyle: theme.textTheme.bodyMedium
   ///   enableFeedback: true
   final PopupMenuThemeData? menuThemeData;
 
@@ -160,7 +162,7 @@ class ContextCopyPasteMenu extends StatelessWidget {
           menuThemeData?.elevation ?? theme.popupMenuTheme.elevation ?? 3,
       textStyle: menuThemeData?.textStyle ??
           theme.popupMenuTheme.textStyle ??
-          theme.textTheme.bodyText2 ??
+          theme.textTheme.bodyMedium ??
           const TextStyle(fontSize: 14),
       enableFeedback: menuThemeData?.enableFeedback ??
           theme.popupMenuTheme.enableFeedback ??

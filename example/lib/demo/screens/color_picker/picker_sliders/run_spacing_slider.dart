@@ -6,23 +6,23 @@ import '../../../widgets/maybe_tooltip.dart';
 
 @immutable
 class RunSpacingSlider extends ConsumerWidget {
-  const RunSpacingSlider({Key? key}) : super(key: key);
+  const RunSpacingSlider({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaybeTooltip(
       condition: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(runSpacing: '
-          '${ref.read(runSpacingPod).floor().toString()})',
+          '${ref.read(runSpacingPod).floor()})',
       child: ListTile(
         title: const Text('Color picker item run spacing'),
-        subtitle: Slider.adaptive(
+        subtitle: Slider(
             max: 25,
             divisions: 25,
-            label: ref.read(runSpacingPod).floor().toString(),
+            label: ref.watch(runSpacingPod).floor().toString(),
             value: ref.watch(runSpacingPod),
             onChanged: (double value) =>
-                ref.read(runSpacingPod.state).state = value),
+                ref.read(runSpacingPod.notifier).state = value),
         trailing: Padding(
           padding: const EdgeInsets.only(right: 12),
           child: Column(

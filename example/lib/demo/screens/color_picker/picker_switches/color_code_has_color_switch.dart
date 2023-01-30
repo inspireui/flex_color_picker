@@ -6,7 +6,7 @@ import '../../../widgets/switch_tile_tooltip.dart';
 
 @immutable
 class ColorCodeHasColorSwitch extends ConsumerWidget {
-  const ColorCodeHasColorSwitch({Key? key}) : super(key: key);
+  const ColorCodeHasColorSwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,7 +16,7 @@ class ColorCodeHasColorSwitch extends ConsumerWidget {
           'background color.'),
       value: ref.watch(colorCodeHasColorPod),
       onChanged: (bool value) =>
-          ref.read(colorCodeHasColorPod.state).state = value,
+          ref.read(colorCodeHasColorPod.notifier).state = value,
       tooltipEnabled: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(colorCodeHasColor: '
           '${ref.read(colorCodeHasColorPod)})',

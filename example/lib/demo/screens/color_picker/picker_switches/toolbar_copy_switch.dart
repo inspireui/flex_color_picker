@@ -6,14 +6,14 @@ import '../../../widgets/switch_tile_tooltip.dart';
 
 @immutable
 class ToolbarCopySwitch extends ConsumerWidget {
-  const ToolbarCopySwitch({Key? key}) : super(key: key);
+  const ToolbarCopySwitch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SwitchTileTooltip(
       title: const Text('Enable toolbar COPY action button'),
       value: ref.watch(copyButtonPod),
-      onChanged: (bool value) => ref.read(copyButtonPod.state).state = value,
+      onChanged: (bool value) => ref.read(copyButtonPod.notifier).state = value,
       tooltipEnabled: ref.watch(enableTooltipsPod),
       tooltip: 'ColorPicker(copyPasteBehavior:\n'
           '  ColorPickerCopyPasteBehavior(copyButton: '
