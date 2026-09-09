@@ -1,9 +1,11 @@
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: for clarity in tests.
+// ignore_for_file: unused_local_variable, Claude's test, we will fix later.
+// ignore_for_file: unnecessary_null_comparison, part of the tests for clarity.
 
 //****************************************************************************
 // FlexColorPicker ColorPicker Widget tests
@@ -13,8 +15,7 @@ void main() {
 
   group('CPI1: In App With ColorPicker', () {
     debugDefaultTargetPlatformOverride = null;
-    testWidgets('CPI1.1: Finds default ColorPicker()',
-        (WidgetTester tester) async {
+    testWidgets('CPI1.1: Finds default ColorPicker()', (WidgetTester tester) async {
       await tester.pumpWidget(
         TestWidget(
           widget: ColorPicker(
@@ -26,7 +27,7 @@ void main() {
       final Finder widget = find.byKey(testKey);
       expect(widget, findsOneWidget);
 
-      // ignore: prefer_function_declarations_over_variables
+      // ignore: prefer_function_declarations_over_variables, use in tests.
       final WidgetPredicate defaultPicker = (Widget widget) =>
           widget is ColorPicker &&
           widget.color == Colors.blue &&
@@ -40,14 +41,15 @@ void main() {
                 ColorPickerType.accent: true,
                 ColorPickerType.bw: false,
                 ColorPickerType.custom: false,
+                ColorPickerType.customSecondary: false,
                 ColorPickerType.wheel: false,
               } &&
-          widget.enableShadesSelection == true &&
-          widget.includeIndex850 == false &&
+          widget.enableShadesSelection &&
+          !widget.includeIndex850 &&
           widget.crossAxisAlignment == CrossAxisAlignment.center &&
           widget.padding == const EdgeInsets.all(16) &&
           widget.columnSpacing == 8 &&
-          widget.enableOpacity == false &&
+          !widget.enableOpacity &&
           widget.opacityTrackHeight == 36 &&
           widget.opacityTrackWidth == null &&
           widget.opacityThumbRadius == 16 &&
@@ -59,35 +61,35 @@ void main() {
           widget.spacing == 4 &&
           widget.runSpacing == 4 &&
           widget.elevation == 0 &&
-          widget.hasBorder == false &&
+          !widget.hasBorder &&
           widget.borderRadius == null &&
           widget.borderColor == null &&
           widget.wheelDiameter == 190 &&
           widget.wheelWidth == 16 &&
           widget.wheelSquarePadding == 0 &&
           widget.wheelSquareBorderRadius == 4 &&
-          widget.wheelHasBorder == false &&
+          !widget.wheelHasBorder &&
           widget.title == null &&
           widget.heading == null &&
           widget.subheading == null &&
           widget.wheelSubheading == null &&
           widget.recentColorsSubheading == null &&
           widget.opacitySubheading == null &&
-          widget.showMaterialName == false &&
+          !widget.showMaterialName &&
           widget.materialNameTextStyle == null &&
-          widget.showColorName == false &&
+          !widget.showColorName &&
           widget.colorNameTextStyle == null &&
-          widget.showColorCode == false &&
-          widget.colorCodeHasColor == false &&
+          !widget.showColorCode &&
+          !widget.colorCodeHasColor &&
           widget.colorCodeTextStyle == null &&
           widget.colorCodePrefixStyle == null &&
-          widget.colorCodeReadOnly == false &&
-          widget.showColorValue == false &&
-          widget.showRecentColors == false &&
+          !widget.colorCodeReadOnly &&
+          !widget.showColorValue &&
+          !widget.showRecentColors &&
           widget.maxRecentColors == 5 &&
           widget.recentColors == const <Color>[] &&
           widget.onRecentColorsChanged == null &&
-          widget.enableTooltips == true &&
+          widget.enableTooltips &&
           widget.selectedPickerTypeColor == null &&
           widget.pickerTypeTextStyle == null &&
           widget.pickerTypeLabels ==
@@ -97,17 +99,18 @@ void main() {
                 ColorPickerType.bw: 'Black & White',
                 ColorPickerType.both: 'Primary & Accent',
                 ColorPickerType.custom: 'Custom',
+                ColorPickerType.customSecondary: 'Option',
                 ColorPickerType.wheel: 'Wheel',
               } &&
-          widget.customColorSwatchesAndNames ==
-              const <ColorSwatch<Object>, String>{};
+          widget.customColorSwatchesAndNames == const <ColorSwatch<Object>, String>{} &&
+          widget.customSecondaryColorSwatchesAndNames == const <ColorSwatch<Object>, String>{};
+
       expect(find.byWidgetPredicate(defaultPicker), findsOneWidget);
     });
     //
     // *************************************************************************
     //
-    testWidgets('CPI1.2: Finds custom-1 ColorPicker() with both picker',
-        (WidgetTester tester) async {
+    testWidgets('CPI1.2: Finds custom-1 ColorPicker() with both picker', (WidgetTester tester) async {
       await tester.pumpWidget(
         TestWidget(
           widget: ColorPicker(
@@ -126,14 +129,14 @@ void main() {
             },
             includeIndex850: true,
             crossAxisAlignment: CrossAxisAlignment.start,
-            // TODO(rydmike): Figure out why opacity PNG does not load in tests.
-            // enableOpacity: true,
+            enableOpacity: true,
             actionButtons: const ColorPickerActionButtons(
               okButton: true,
               closeButton: true,
               okTooltip: 'OK NOW',
               closeTooltip: 'CLOSE NOW',
             ),
+            width: 39,
             hasBorder: true,
             borderRadius: 10,
             borderColor: Colors.black,
@@ -158,21 +161,22 @@ void main() {
             onRecentColorsChanged: (List<Color> colors) {},
             selectedPickerTypeColor: Colors.white,
             customColorSwatchesAndNames: <ColorSwatch<Object>, String>{
-              ColorTools.createPrimarySwatch(const Color(0xFF6200EE)):
-                  'Guide Purple',
-              ColorTools.createPrimarySwatch(const Color(0xFF3700B3)):
-                  'Guide Purple Variant',
-              ColorTools.createAccentSwatch(const Color(0xFF03DAC6)):
-                  'Guide Teal',
+              ColorTools.createPrimarySwatch(const Color(0xFF6200EE)): 'Guide Purple',
+              ColorTools.createPrimarySwatch(const Color(0xFF3700B3)): 'Guide Purple Variant',
+              ColorTools.createAccentSwatch(const Color(0xFF03DAC6)): 'Guide Teal',
+            },
+            customSecondaryColorSwatchesAndNames: <ColorSwatch<Object>, String>{
+              ColorTools.createPrimarySwatch(const Color(0xFF6200EE)): 'Guide Purple',
+              ColorTools.createPrimarySwatch(const Color(0xFF3700B3)): 'Guide Purple Variant',
+              ColorTools.createAccentSwatch(const Color(0xFF03DAC6)): 'Guide Teal',
             },
           ),
         ),
       );
-      //
       final Finder widget = find.byKey(testKey);
       expect(widget, findsOneWidget);
 
-      // ignore: prefer_function_declarations_over_variables
+      // ignore: prefer_function_declarations_over_variables, use in tests ok.
       final WidgetPredicate customPicker = (Widget widget) =>
           widget is ColorPicker &&
           widget.color == Colors.red &&
@@ -188,13 +192,12 @@ void main() {
                 ColorPickerType.custom: true,
                 ColorPickerType.wheel: true,
               } &&
-          widget.enableShadesSelection == true &&
-          widget.includeIndex850 == true &&
+          widget.enableShadesSelection &&
+          widget.includeIndex850 &&
           widget.crossAxisAlignment == CrossAxisAlignment.start &&
           widget.padding == const EdgeInsets.all(16) &&
           widget.columnSpacing == 8 &&
-          // TODO(rydmike): Figure out why opacity PNG does not load in tests.
-          widget.enableOpacity == false &&
+          widget.enableOpacity &&
           widget.opacityTrackHeight == 36 &&
           widget.opacityTrackWidth == null &&
           widget.opacityThumbRadius == 16 &&
@@ -207,40 +210,40 @@ void main() {
               ) &&
           widget.copyPasteBehavior == const ColorPickerCopyPasteBehavior() &&
           widget.selectedColorIcon == Icons.check &&
-          widget.width == 40 &&
+          widget.width == 39 &&
           widget.height == 40 &&
           widget.spacing == 4 &&
           widget.runSpacing == 4 &&
           widget.elevation == 0 &&
-          widget.hasBorder == true &&
+          widget.hasBorder &&
           widget.borderRadius == 10 &&
           widget.borderColor == Colors.black &&
           widget.wheelDiameter == 190 &&
           widget.wheelWidth == 32 &&
           widget.wheelSquarePadding == 4 &&
           widget.wheelSquareBorderRadius == 6 &&
-          widget.wheelHasBorder == true &&
+          widget.wheelHasBorder &&
           widget.title != null &&
           widget.heading != null &&
           widget.subheading != null &&
           widget.wheelSubheading != null &&
           widget.opacitySubheading != null &&
           widget.recentColorsSubheading != null &&
-          widget.showMaterialName == true &&
+          widget.showMaterialName &&
           widget.materialNameTextStyle == null &&
-          widget.showColorName == true &&
+          widget.showColorName &&
           widget.colorNameTextStyle == null &&
-          widget.showColorCode == true &&
-          widget.colorCodeHasColor == true &&
+          widget.showColorCode &&
+          widget.colorCodeHasColor &&
           widget.colorCodeTextStyle == null &&
           widget.colorCodePrefixStyle == null &&
-          widget.colorCodeReadOnly == false &&
-          widget.showColorValue == true &&
-          widget.showRecentColors == true &&
+          !widget.colorCodeReadOnly &&
+          widget.showColorValue &&
+          widget.showRecentColors &&
           widget.maxRecentColors == 10 &&
           widget.recentColors == const <Color>[Colors.black, Colors.white] &&
           widget.onRecentColorsChanged != null &&
-          widget.enableTooltips == true &&
+          widget.enableTooltips &&
           widget.selectedPickerTypeColor == Colors.white &&
           widget.pickerTypeTextStyle == null &&
           widget.pickerTypeLabels ==
@@ -250,16 +253,17 @@ void main() {
                 ColorPickerType.bw: 'Black & White',
                 ColorPickerType.both: 'Primary & Accent',
                 ColorPickerType.custom: 'Custom',
+                ColorPickerType.customSecondary: 'Option',
                 ColorPickerType.wheel: 'Wheel',
               } &&
-          widget.customColorSwatchesAndNames != <ColorSwatch<Object>, String>{};
-      expect(find.byWidgetPredicate(customPicker), findsOneWidget);
+          widget.customColorSwatchesAndNames != <ColorSwatch<Object>, String>{} &&
+          widget.customSecondaryColorSwatchesAndNames != <ColorSwatch<Object>, String>{};
+      expect(find.byWidgetPredicate(customPicker, skipOffstage: false), findsOneWidget);
     });
     //
     // *************************************************************************
     //
-    testWidgets('CPI1.3: Finds custom-2 ColorPicker() using wheel',
-        (WidgetTester tester) async {
+    testWidgets('CPI1.3: Finds custom-2 ColorPicker() using wheel', (WidgetTester tester) async {
       await tester.pumpWidget(
         TestWidget(
           widget: ColorPicker(
@@ -278,8 +282,7 @@ void main() {
             },
             includeIndex850: true,
             crossAxisAlignment: CrossAxisAlignment.start,
-            // TODO(rydmike): Figure out why opacity PNG does not load in tests.
-            // enableOpacity: true,
+            enableOpacity: true,
             actionButtons: const ColorPickerActionButtons(
               okButton: true,
               closeButton: true,
@@ -310,21 +313,22 @@ void main() {
             onRecentColorsChanged: (List<Color> colors) {},
             selectedPickerTypeColor: Colors.white,
             customColorSwatchesAndNames: <ColorSwatch<Object>, String>{
-              ColorTools.createPrimarySwatch(const Color(0xFF6200EE)):
-                  'Guide Purple',
-              ColorTools.createPrimarySwatch(const Color(0xFF3700B3)):
-                  'Guide Purple Variant',
-              ColorTools.createAccentSwatch(const Color(0xFF03DAC6)):
-                  'Guide Teal',
+              ColorTools.createPrimarySwatch(const Color(0xFF6200EE)): 'Guide Purple',
+              ColorTools.createPrimarySwatch(const Color(0xFF3700B3)): 'Guide Purple Variant',
+              ColorTools.createAccentSwatch(const Color(0xFF03DAC6)): 'Guide Teal',
+            },
+            customSecondaryColorSwatchesAndNames: <ColorSwatch<Object>, String>{
+              ColorTools.createPrimarySwatch(const Color(0xFF6200EE)): 'Guide Purple',
+              ColorTools.createPrimarySwatch(const Color(0xFF3700B3)): 'Guide Purple Variant',
+              ColorTools.createAccentSwatch(const Color(0xFF03DAC6)): 'Guide Teal',
             },
           ),
         ),
       );
-      //
       final Finder widget = find.byKey(testKey);
       expect(widget, findsOneWidget);
 
-      // ignore: prefer_function_declarations_over_variables
+      // ignore: prefer_function_declarations_over_variables, use in tests ok.
       final WidgetPredicate customPicker = (Widget widget) =>
           widget is ColorPicker &&
           widget.color == const Color(0xF03295C1) &&
@@ -340,13 +344,12 @@ void main() {
                 ColorPickerType.custom: true,
                 ColorPickerType.wheel: true,
               } &&
-          widget.enableShadesSelection == true &&
-          widget.includeIndex850 == true &&
+          widget.enableShadesSelection &&
+          widget.includeIndex850 &&
           widget.crossAxisAlignment == CrossAxisAlignment.start &&
           widget.padding == const EdgeInsets.all(16) &&
           widget.columnSpacing == 8 &&
-          // TODO(rydmike): Figure out why opacity PNG does not load in tests.
-          widget.enableOpacity == false &&
+          widget.enableOpacity &&
           widget.opacityTrackHeight == 36 &&
           widget.opacityTrackWidth == null &&
           widget.opacityThumbRadius == 16 &&
@@ -364,35 +367,35 @@ void main() {
           widget.spacing == 4 &&
           widget.runSpacing == 4 &&
           widget.elevation == 0 &&
-          widget.hasBorder == true &&
+          widget.hasBorder &&
           widget.borderRadius == 10 &&
           widget.borderColor == Colors.black &&
           widget.wheelDiameter == 190 &&
           widget.wheelWidth == 32 &&
           widget.wheelSquarePadding == 5 &&
           widget.wheelSquareBorderRadius == 0 &&
-          widget.wheelHasBorder == true &&
+          widget.wheelHasBorder &&
           widget.title != null &&
           widget.heading != null &&
           widget.subheading != null &&
           widget.wheelSubheading != null &&
           widget.opacitySubheading != null &&
           widget.recentColorsSubheading != null &&
-          widget.showMaterialName == true &&
+          widget.showMaterialName &&
           widget.materialNameTextStyle == null &&
-          widget.showColorName == true &&
+          widget.showColorName &&
           widget.colorNameTextStyle == null &&
-          widget.showColorCode == true &&
-          widget.colorCodeHasColor == true &&
+          widget.showColorCode &&
+          widget.colorCodeHasColor &&
           widget.colorCodeTextStyle == null &&
           widget.colorCodePrefixStyle == null &&
-          widget.colorCodeReadOnly == false &&
-          widget.showColorValue == true &&
-          widget.showRecentColors == true &&
+          !widget.colorCodeReadOnly &&
+          widget.showColorValue &&
+          widget.showRecentColors &&
           widget.maxRecentColors == 10 &&
           widget.recentColors == const <Color>[Colors.black, Colors.white] &&
           widget.onRecentColorsChanged != null &&
-          widget.enableTooltips == true &&
+          widget.enableTooltips &&
           widget.selectedPickerTypeColor == Colors.white &&
           widget.pickerTypeTextStyle == null &&
           widget.pickerTypeLabels ==
@@ -402,18 +405,19 @@ void main() {
                 ColorPickerType.bw: 'Black & White',
                 ColorPickerType.both: 'Primary & Accent',
                 ColorPickerType.custom: 'Custom',
+                ColorPickerType.customSecondary: 'Option',
                 ColorPickerType.wheel: 'Wheel',
               } &&
-          widget.customColorSwatchesAndNames != <ColorSwatch<Object>, String>{};
+          widget.customColorSwatchesAndNames != <ColorSwatch<Object>, String>{} &&
+          widget.customSecondaryColorSwatchesAndNames != <ColorSwatch<Object>, String>{};
       expect(find.byWidgetPredicate(customPicker), findsOneWidget);
     });
 
     //
     // *************************************************************************
     //
-    testWidgets(
-        'CPI1.4: Finds custom-3 ColorPicker() using custom colors '
-        'and tonal palette', (WidgetTester tester) async {
+    testWidgets('CPI1.4: Finds custom-3 ColorPicker() using custom colors '
+        'and tonal palette and same size tonal', (WidgetTester tester) async {
       await tester.pumpWidget(
         TestWidget(
           widget: ColorPicker(
@@ -432,9 +436,9 @@ void main() {
             },
             includeIndex850: true,
             crossAxisAlignment: CrossAxisAlignment.start,
-            // TODO(rydmike): Figure out why opacity PNG does not load in tests.
-            // enableOpacity: true,
+            enableOpacity: true,
             enableTonalPalette: true,
+            tonalColorSameSize: true,
             opacityTrackHeight: 40,
             opacityThumbRadius: 25,
             opacityTrackWidth: 300,
@@ -490,22 +494,22 @@ void main() {
             onRecentColorsChanged: (List<Color> colors) {},
             selectedPickerTypeColor: Colors.white,
             customColorSwatchesAndNames: <ColorSwatch<Object>, String>{
-              ColorTools.createPrimarySwatch(const Color(0xFF6200EE)):
-                  'Guide Purple',
-              ColorTools.createPrimarySwatch(const Color(0xFF3700B3)):
-                  'Guide Purple Variant',
-              ColorTools.createAccentSwatch(const Color(0xFF03DAC6)):
-                  'Guide Teal',
+              ColorTools.createPrimarySwatch(const Color(0xFF6200EE)): 'Guide Purple',
+              ColorTools.createPrimarySwatch(const Color(0xFF3700B3)): 'Guide Purple Variant',
+              ColorTools.createAccentSwatch(const Color(0xFF03DAC6)): 'Guide Teal',
+            },
+            customSecondaryColorSwatchesAndNames: <ColorSwatch<Object>, String>{
+              ColorTools.createPrimarySwatch(const Color(0xFF6200EE)): 'Guide Purple',
+              ColorTools.createPrimarySwatch(const Color(0xFF3700B3)): 'Guide Purple Variant',
+              ColorTools.createAccentSwatch(const Color(0xFF03DAC6)): 'Guide Teal',
             },
           ),
         ),
       );
-
-      //
       final Finder widget = find.byKey(testKey);
       expect(widget, findsOneWidget);
 
-      // ignore: prefer_function_declarations_over_variables
+      // ignore: prefer_function_declarations_over_variables, use in tests ok.
       final WidgetPredicate customPicker = (Widget widget) =>
           widget is ColorPicker &&
           widget.color == const Color(0xFA6200EE) &&
@@ -521,13 +525,12 @@ void main() {
                 ColorPickerType.custom: true,
                 ColorPickerType.wheel: true,
               } &&
-          widget.enableShadesSelection == true &&
-          widget.includeIndex850 == true &&
+          widget.enableShadesSelection &&
+          widget.includeIndex850 &&
           widget.crossAxisAlignment == CrossAxisAlignment.start &&
           widget.padding == const EdgeInsets.all(16) &&
           widget.columnSpacing == 8 &&
-          // TODO(rydmike): Figure out why opacity PNG does not load in tests.
-          widget.enableOpacity == false &&
+          widget.enableOpacity &&
           widget.opacityTrackHeight == 40 &&
           widget.opacityThumbRadius == 25 &&
           widget.opacityTrackWidth == 300 &&
@@ -566,35 +569,35 @@ void main() {
           widget.spacing == 4 &&
           widget.runSpacing == 4 &&
           widget.elevation == 0 &&
-          widget.hasBorder == true &&
+          widget.hasBorder &&
           widget.borderRadius == 10 &&
           widget.borderColor == Colors.black &&
           widget.wheelDiameter == 190 &&
           widget.wheelSquarePadding == 10 &&
           widget.wheelSquareBorderRadius == 2 &&
           widget.wheelWidth == 32 &&
-          widget.wheelHasBorder == true &&
+          widget.wheelHasBorder &&
           widget.title != null &&
           widget.heading != null &&
           widget.subheading != null &&
           widget.wheelSubheading != null &&
           widget.opacitySubheading != null &&
           widget.recentColorsSubheading != null &&
-          widget.showMaterialName == true &&
+          widget.showMaterialName &&
           widget.materialNameTextStyle == null &&
-          widget.showColorName == true &&
+          widget.showColorName &&
           widget.colorNameTextStyle == null &&
-          widget.showColorCode == true &&
-          widget.colorCodeHasColor == true &&
+          widget.showColorCode &&
+          widget.colorCodeHasColor &&
           widget.colorCodeTextStyle == null &&
           widget.colorCodePrefixStyle == null &&
-          widget.colorCodeReadOnly == false &&
-          widget.showColorValue == true &&
-          widget.showRecentColors == true &&
+          !widget.colorCodeReadOnly &&
+          widget.showColorValue &&
+          widget.showRecentColors &&
           widget.maxRecentColors == 10 &&
           widget.recentColors == const <Color>[Colors.black, Colors.white] &&
           widget.onRecentColorsChanged != null &&
-          widget.enableTooltips == true &&
+          widget.enableTooltips &&
           widget.selectedPickerTypeColor == Colors.white &&
           widget.pickerTypeTextStyle == null &&
           widget.pickerTypeLabels ==
@@ -604,17 +607,18 @@ void main() {
                 ColorPickerType.bw: 'Black & White',
                 ColorPickerType.both: 'Primary & Accent',
                 ColorPickerType.custom: 'Custom',
+                ColorPickerType.customSecondary: 'Option',
                 ColorPickerType.wheel: 'Wheel',
               } &&
-          widget.customColorSwatchesAndNames != <ColorSwatch<Object>, String>{};
+          widget.customColorSwatchesAndNames != <ColorSwatch<Object>, String>{} &&
+          widget.customSecondaryColorSwatchesAndNames != <ColorSwatch<Object>, String>{};
       expect(find.byWidgetPredicate(customPicker), findsOneWidget);
     });
 
     //
     // *************************************************************************
     //
-    testWidgets('CPI1.5: Finds custom-3 ColorPicker() using primary colors',
-        (WidgetTester tester) async {
+    testWidgets('CPI1.5: Finds custom-3 ColorPicker() using primary colors', (WidgetTester tester) async {
       await tester.pumpWidget(
         TestWidget(
           widget: ColorPicker(
@@ -633,8 +637,7 @@ void main() {
             },
             includeIndex850: true,
             crossAxisAlignment: CrossAxisAlignment.start,
-            // TODO(rydmike): Figure out why opacity PNG does not load in tests.
-            // enableOpacity: true,
+            enableOpacity: true,
             opacityTrackHeight: 40,
             opacityThumbRadius: 25,
             opacityTrackWidth: 300,
@@ -689,22 +692,22 @@ void main() {
             onRecentColorsChanged: (List<Color> colors) {},
             selectedPickerTypeColor: Colors.white,
             customColorSwatchesAndNames: <ColorSwatch<Object>, String>{
-              ColorTools.createPrimarySwatch(const Color(0xFF6200EE)):
-                  'Guide Purple',
-              ColorTools.createPrimarySwatch(const Color(0xFF3700B3)):
-                  'Guide Purple Variant',
-              ColorTools.createAccentSwatch(const Color(0xFF03DAC6)):
-                  'Guide Teal',
+              ColorTools.createPrimarySwatch(const Color(0xFF6200EE)): 'Guide Purple',
+              ColorTools.createPrimarySwatch(const Color(0xFF3700B3)): 'Guide Purple Variant',
+              ColorTools.createAccentSwatch(const Color(0xFF03DAC6)): 'Guide Teal',
+            },
+            customSecondaryColorSwatchesAndNames: <ColorSwatch<Object>, String>{
+              ColorTools.createPrimarySwatch(const Color(0xFF6200EE)): 'Guide Purple',
+              ColorTools.createPrimarySwatch(const Color(0xFF3700B3)): 'Guide Purple Variant',
+              ColorTools.createAccentSwatch(const Color(0xFF03DAC6)): 'Guide Teal',
             },
           ),
         ),
       );
-
-      //
       final Finder widget = find.byKey(testKey);
       expect(widget, findsOneWidget);
 
-      // ignore: prefer_function_declarations_over_variables
+      // ignore: prefer_function_declarations_over_variables, use in tests ok.
       final WidgetPredicate customPicker = (Widget widget) =>
           widget is ColorPicker &&
           widget.color == Colors.red.shade200 &&
@@ -720,13 +723,12 @@ void main() {
                 ColorPickerType.custom: true,
                 ColorPickerType.wheel: true,
               } &&
-          widget.enableShadesSelection == true &&
-          widget.includeIndex850 == true &&
+          widget.enableShadesSelection &&
+          widget.includeIndex850 &&
           widget.crossAxisAlignment == CrossAxisAlignment.start &&
           widget.padding == const EdgeInsets.all(16) &&
           widget.columnSpacing == 8 &&
-          // TODO(rydmike): Figure out why opacity PNG does not load in tests.
-          widget.enableOpacity == false &&
+          widget.enableOpacity &&
           widget.opacityTrackHeight == 40 &&
           widget.opacityThumbRadius == 25 &&
           widget.opacityTrackWidth == 300 &&
@@ -765,35 +767,35 @@ void main() {
           widget.spacing == 4 &&
           widget.runSpacing == 4 &&
           widget.elevation == 0 &&
-          widget.hasBorder == true &&
+          widget.hasBorder &&
           widget.borderRadius == 10 &&
           widget.borderColor == Colors.black &&
           widget.wheelDiameter == 190 &&
           widget.wheelWidth == 32 &&
           widget.wheelSquarePadding == 0 &&
           widget.wheelSquareBorderRadius == 0 &&
-          widget.wheelHasBorder == true &&
+          widget.wheelHasBorder &&
           widget.title != null &&
           widget.heading != null &&
           widget.subheading != null &&
           widget.wheelSubheading != null &&
           widget.opacitySubheading != null &&
           widget.recentColorsSubheading != null &&
-          widget.showMaterialName == true &&
+          widget.showMaterialName &&
           widget.materialNameTextStyle == null &&
-          widget.showColorName == true &&
+          widget.showColorName &&
           widget.colorNameTextStyle == null &&
-          widget.showColorCode == true &&
-          widget.colorCodeHasColor == true &&
+          widget.showColorCode &&
+          widget.colorCodeHasColor &&
           widget.colorCodeTextStyle == null &&
           widget.colorCodePrefixStyle == null &&
-          widget.colorCodeReadOnly == false &&
-          widget.showColorValue == true &&
-          widget.showRecentColors == true &&
+          !widget.colorCodeReadOnly &&
+          widget.showColorValue &&
+          widget.showRecentColors &&
           widget.maxRecentColors == 10 &&
           widget.recentColors == const <Color>[Colors.black, Colors.white] &&
           widget.onRecentColorsChanged != null &&
-          widget.enableTooltips == true &&
+          widget.enableTooltips &&
           widget.selectedPickerTypeColor == Colors.white &&
           widget.pickerTypeTextStyle == null &&
           widget.pickerTypeLabels ==
@@ -803,17 +805,18 @@ void main() {
                 ColorPickerType.bw: 'Black & White',
                 ColorPickerType.both: 'Primary & Accent',
                 ColorPickerType.custom: 'Custom',
+                ColorPickerType.customSecondary: 'Option',
                 ColorPickerType.wheel: 'Wheel',
               } &&
-          widget.customColorSwatchesAndNames != <ColorSwatch<Object>, String>{};
+          widget.customColorSwatchesAndNames != <ColorSwatch<Object>, String>{} &&
+          widget.customSecondaryColorSwatchesAndNames != <ColorSwatch<Object>, String>{};
       expect(find.byWidgetPredicate(customPicker), findsOneWidget);
     });
 
     //
     // *************************************************************************
     //
-    testWidgets('CPI1.6: Finds custom-3 ColorPicker() using accent colors',
-        (WidgetTester tester) async {
+    testWidgets('CPI1.6: Finds custom-3 ColorPicker() using accent colors', (WidgetTester tester) async {
       await tester.pumpWidget(
         TestWidget(
           widget: ColorPicker(
@@ -832,8 +835,7 @@ void main() {
             },
             includeIndex850: true,
             crossAxisAlignment: CrossAxisAlignment.start,
-            // TODO(rydmike): Figure out why opacity PNG does not load in tests.
-            // enableOpacity: true,
+            enableOpacity: true,
             opacityTrackHeight: 40,
             opacityThumbRadius: 25,
             opacityTrackWidth: 300,
@@ -888,22 +890,22 @@ void main() {
             onRecentColorsChanged: (List<Color> colors) {},
             selectedPickerTypeColor: Colors.white,
             customColorSwatchesAndNames: <ColorSwatch<Object>, String>{
-              ColorTools.createPrimarySwatch(const Color(0xFF6200EE)):
-                  'Guide Purple',
-              ColorTools.createPrimarySwatch(const Color(0xFF3700B3)):
-                  'Guide Purple Variant',
-              ColorTools.createAccentSwatch(const Color(0xFF03DAC6)):
-                  'Guide Teal',
+              ColorTools.createPrimarySwatch(const Color(0xFF6200EE)): 'Guide Purple',
+              ColorTools.createPrimarySwatch(const Color(0xFF3700B3)): 'Guide Purple Variant',
+              ColorTools.createAccentSwatch(const Color(0xFF03DAC6)): 'Guide Teal',
+            },
+            customSecondaryColorSwatchesAndNames: <ColorSwatch<Object>, String>{
+              ColorTools.createPrimarySwatch(const Color(0xFF6200EE)): 'Guide Purple',
+              ColorTools.createPrimarySwatch(const Color(0xFF3700B3)): 'Guide Purple Variant',
+              ColorTools.createAccentSwatch(const Color(0xFF03DAC6)): 'Guide Teal',
             },
           ),
         ),
       );
-
-      //
       final Finder widget = find.byKey(testKey);
       expect(widget, findsOneWidget);
 
-      // ignore: prefer_function_declarations_over_variables
+      // ignore: prefer_function_declarations_over_variables, use in tests ok.
       final WidgetPredicate customPicker = (Widget widget) =>
           widget is ColorPicker &&
           widget.color == Colors.pinkAccent.shade700 &&
@@ -919,13 +921,12 @@ void main() {
                 ColorPickerType.custom: true,
                 ColorPickerType.wheel: true,
               } &&
-          widget.enableShadesSelection == true &&
-          widget.includeIndex850 == true &&
+          widget.enableShadesSelection &&
+          widget.includeIndex850 &&
           widget.crossAxisAlignment == CrossAxisAlignment.start &&
           widget.padding == const EdgeInsets.all(16) &&
           widget.columnSpacing == 8 &&
-          // TODO(rydmike): Figure out why opacity PNG does not load in tests.
-          widget.enableOpacity == false &&
+          widget.enableOpacity &&
           widget.opacityTrackHeight == 40 &&
           widget.opacityThumbRadius == 25 &&
           widget.opacityTrackWidth == 300 &&
@@ -964,35 +965,35 @@ void main() {
           widget.spacing == 4 &&
           widget.runSpacing == 4 &&
           widget.elevation == 0 &&
-          widget.hasBorder == true &&
+          widget.hasBorder &&
           widget.borderRadius == 10 &&
           widget.borderColor == Colors.black &&
           widget.wheelDiameter == 190 &&
           widget.wheelWidth == 32 &&
           widget.wheelSquarePadding == 3.5 &&
           widget.wheelSquareBorderRadius == 3.5 &&
-          widget.wheelHasBorder == true &&
+          widget.wheelHasBorder &&
           widget.title != null &&
           widget.heading != null &&
           widget.subheading != null &&
           widget.wheelSubheading != null &&
           widget.opacitySubheading != null &&
           widget.recentColorsSubheading != null &&
-          widget.showMaterialName == true &&
+          widget.showMaterialName &&
           widget.materialNameTextStyle == null &&
-          widget.showColorName == true &&
+          widget.showColorName &&
           widget.colorNameTextStyle == null &&
-          widget.showColorCode == true &&
-          widget.colorCodeHasColor == true &&
+          widget.showColorCode &&
+          widget.colorCodeHasColor &&
           widget.colorCodeTextStyle == null &&
           widget.colorCodePrefixStyle == null &&
-          widget.colorCodeReadOnly == false &&
-          widget.showColorValue == true &&
-          widget.showRecentColors == true &&
+          !widget.colorCodeReadOnly &&
+          widget.showColorValue &&
+          widget.showRecentColors &&
           widget.maxRecentColors == 10 &&
           widget.recentColors == const <Color>[Colors.black, Colors.white] &&
           widget.onRecentColorsChanged != null &&
-          widget.enableTooltips == true &&
+          widget.enableTooltips &&
           widget.selectedPickerTypeColor == Colors.white &&
           widget.pickerTypeTextStyle == null &&
           widget.pickerTypeLabels ==
@@ -1002,10 +1003,251 @@ void main() {
                 ColorPickerType.bw: 'Black & White',
                 ColorPickerType.both: 'Primary & Accent',
                 ColorPickerType.custom: 'Custom',
+                ColorPickerType.customSecondary: 'Option',
                 ColorPickerType.wheel: 'Wheel',
               } &&
-          widget.customColorSwatchesAndNames != <ColorSwatch<Object>, String>{};
+          widget.customColorSwatchesAndNames != <ColorSwatch<Object>, String>{} &&
+          widget.customSecondaryColorSwatchesAndNames != <ColorSwatch<Object>, String>{};
       expect(find.byWidgetPredicate(customPicker), findsOneWidget);
+    });
+  });
+
+  group('CPI2: ColorPicker didUpdateWidget tests', () {
+    testWidgets('CPI2.1: ColorPicker didUpdateWidget with enableOpacity change', (WidgetTester tester) async {
+      Color pickedColor = Colors.blue;
+
+      await tester.pumpWidget(
+        TestWidget(
+          widget: ColorPicker(
+            color: Colors.blue,
+            onColorChanged: (Color color) {
+              pickedColor = color;
+            },
+            enableOpacity: false,
+          ),
+        ),
+      );
+
+      expect(find.byType(ColorPicker), findsOneWidget);
+
+      // Update widget with enableOpacity changed to true
+      await tester.pumpWidget(
+        TestWidget(
+          widget: ColorPicker(
+            color: Colors.blue.withValues(alpha: 0.5),
+            onColorChanged: (Color color) {
+              pickedColor = color;
+            },
+            enableOpacity: true,
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.byType(ColorPicker), findsOneWidget);
+    });
+
+    testWidgets('CPI2.2: ColorPicker didUpdateWidget with color change', (WidgetTester tester) async {
+      Color pickedColor = Colors.blue;
+
+      await tester.pumpWidget(
+        TestWidget(
+          widget: ColorPicker(
+            color: Colors.blue,
+            onColorChanged: (Color color) {
+              pickedColor = color;
+            },
+          ),
+        ),
+      );
+
+      expect(find.byType(ColorPicker), findsOneWidget);
+
+      // Update widget with different color
+      await tester.pumpWidget(
+        TestWidget(
+          widget: ColorPicker(
+            color: Colors.red,
+            onColorChanged: (Color color) {
+              pickedColor = color;
+            },
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.byType(ColorPicker), findsOneWidget);
+    });
+
+    testWidgets('CPI2.3: ColorPicker didUpdateWidget with pickerTypeLabels change', (WidgetTester tester) async {
+      Color pickedColor = Colors.blue;
+
+      await tester.pumpWidget(
+        TestWidget(
+          widget: ColorPicker(
+            color: Colors.blue,
+            onColorChanged: (Color color) {
+              pickedColor = color;
+            },
+            pickersEnabled: const <ColorPickerType, bool>{
+              ColorPickerType.both: true,
+              ColorPickerType.primary: true,
+              ColorPickerType.accent: true,
+              ColorPickerType.bw: true,
+              ColorPickerType.custom: false,
+              ColorPickerType.customSecondary: false,
+              ColorPickerType.wheel: false,
+            },
+            pickerTypeLabels: const <ColorPickerType, String>{
+              ColorPickerType.primary: 'Primary Colors',
+              ColorPickerType.accent: 'Accent Colors',
+            },
+          ),
+        ),
+      );
+
+      expect(find.byType(ColorPicker), findsOneWidget);
+
+      // Update widget with different pickerTypeLabels
+      await tester.pumpWidget(
+        TestWidget(
+          widget: ColorPicker(
+            color: Colors.blue,
+            onColorChanged: (Color color) {
+              pickedColor = color;
+            },
+            pickersEnabled: const <ColorPickerType, bool>{
+              ColorPickerType.both: true,
+              ColorPickerType.primary: true,
+              ColorPickerType.accent: true,
+              ColorPickerType.bw: true,
+              ColorPickerType.custom: false,
+              ColorPickerType.customSecondary: false,
+              ColorPickerType.wheel: false,
+            },
+            pickerTypeLabels: const <ColorPickerType, String>{
+              ColorPickerType.primary: 'Main Colors',
+              ColorPickerType.accent: 'Secondary Colors',
+              ColorPickerType.both: 'All Colors',
+            },
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.byType(ColorPicker), findsOneWidget);
+    });
+
+    testWidgets('CPI2.4: ColorPicker didUpdateWidget with '
+        'customColorSwatchesAndNames change', (WidgetTester tester) async {
+      Color pickedColor = Colors.blue;
+
+      final Map<ColorSwatch<Object>, String> customSwatches1 = <ColorSwatch<Object>, String>{
+        ColorTools.createPrimarySwatch(Colors.purple): 'Purple',
+      };
+
+      await tester.pumpWidget(
+        TestWidget(
+          widget: ColorPicker(
+            color: Colors.blue,
+            onColorChanged: (Color color) {
+              pickedColor = color;
+            },
+            pickersEnabled: const <ColorPickerType, bool>{
+              ColorPickerType.both: false,
+              ColorPickerType.primary: false,
+              ColorPickerType.accent: false,
+              ColorPickerType.bw: false,
+              ColorPickerType.custom: true,
+              ColorPickerType.customSecondary: false,
+              ColorPickerType.wheel: false,
+            },
+            customColorSwatchesAndNames: customSwatches1,
+          ),
+        ),
+      );
+
+      expect(find.byType(ColorPicker), findsOneWidget);
+
+      // Update widget with different customColorSwatchesAndNames
+      final Map<ColorSwatch<Object>, String> customSwatches2 = <ColorSwatch<Object>, String>{
+        ColorTools.createPrimarySwatch(Colors.orange): 'Orange',
+        ColorTools.createPrimarySwatch(Colors.pink): 'Pink',
+      };
+
+      await tester.pumpWidget(
+        TestWidget(
+          widget: ColorPicker(
+            color: Colors.blue,
+            onColorChanged: (Color color) {
+              pickedColor = color;
+            },
+            pickersEnabled: const <ColorPickerType, bool>{
+              ColorPickerType.both: false,
+              ColorPickerType.primary: false,
+              ColorPickerType.accent: false,
+              ColorPickerType.bw: false,
+              ColorPickerType.custom: true,
+              ColorPickerType.customSecondary: false,
+              ColorPickerType.wheel: false,
+            },
+            customColorSwatchesAndNames: customSwatches2,
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.byType(ColorPicker), findsOneWidget);
+    });
+
+    testWidgets('CPI2.5: ColorPicker didUpdateWidget with pickersEnabled change', (WidgetTester tester) async {
+      Color pickedColor = Colors.blue;
+
+      await tester.pumpWidget(
+        TestWidget(
+          widget: ColorPicker(
+            color: Colors.blue,
+            onColorChanged: (Color color) {
+              pickedColor = color;
+            },
+            pickersEnabled: const <ColorPickerType, bool>{
+              ColorPickerType.both: false,
+              ColorPickerType.primary: true,
+              ColorPickerType.accent: true,
+              ColorPickerType.bw: false,
+              ColorPickerType.custom: false,
+              ColorPickerType.customSecondary: false,
+              ColorPickerType.wheel: false,
+            },
+          ),
+        ),
+      );
+
+      expect(find.byType(ColorPicker), findsOneWidget);
+
+      // Update widget with different pickersEnabled
+      await tester.pumpWidget(
+        TestWidget(
+          widget: ColorPicker(
+            color: Colors.blue,
+            onColorChanged: (Color color) {
+              pickedColor = color;
+            },
+            pickersEnabled: const <ColorPickerType, bool>{
+              ColorPickerType.both: true,
+              ColorPickerType.primary: true,
+              ColorPickerType.accent: true,
+              ColorPickerType.bw: true,
+              ColorPickerType.custom: false,
+              ColorPickerType.customSecondary: false,
+              ColorPickerType.wheel: true,
+            },
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.byType(ColorPicker), findsOneWidget);
     });
   });
 }

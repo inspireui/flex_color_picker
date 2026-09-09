@@ -1,25 +1,32 @@
-// ignore_for_file: use_super_parameters
-
-import 'package:flutter/material.dart';
+import 'package:flex_color_picker/src/color_picker_extensions.dart';
+import 'package:flex_color_picker/src/functions/picker_functions.dart';
+import 'package:flex_color_picker/src/models/color_picker_action_buttons.dart';
+import 'package:flex_color_picker/src/models/color_picker_copy_paste_behavior.dart';
+import 'package:flex_color_picker/src/universal_widgets/dry_intrinsic.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:material_ui/material_ui.dart';
 
-import '../color_picker_extensions.dart';
-import '../functions/picker_functions.dart';
-import '../models/color_picker_action_buttons.dart';
-import '../models/color_picker_copy_paste_behavior.dart';
-import '../universal_widgets/dry_intrisinic.dart';
+// Set the bool flag to true to show debug prints. Even if you forgot
+// to set it to false, debug prints will not show in release builds.
+// The handy part is that if it gets in the way in debugging, it is an easy
+// toggle to turn it off here for just this feature. You can leave it true
+// below to see this feature's logs in debug mode.
+// ignore: no_literal_bool_comparisons, it is a debug flag
+const bool _debug = !kReleaseMode && false;
 
-/// Color code entry and display field used by the color picker.
-///
-/// Not library exposed, private to the library.
+/// Color code entry and display field used by the FlexColorPicker.
+@immutable
 class ColorCodeField extends StatefulWidget {
   /// Default const constructor.
   const ColorCodeField({
-    Key? key,
+    super.key,
     required this.color,
     this.readOnly = false,
     required this.onColorChanged,
     required this.onEditFocused,
+    required this.requestFocus,
+    required this.focusedEditHasNoColor,
     this.textStyle,
     this.prefixStyle,
     this.colorCodeHasColor = false,
@@ -27,12 +34,14 @@ class ColorCodeField extends StatefulWidget {
     this.copyPasteBehavior = const ColorPickerCopyPasteBehavior(),
     this.enableTooltips = true,
     this.shouldUpdate = false,
-  }) : super(key: key);
+  });
 
   /// Current color value for the field.
   final Color color;
 
-  /// Is in read only mode, we should not be able to select either.
+  /// Is in read only mode.
+  ///
+  /// Defaults to false.
   final bool readOnly;
 
   /// Color code of the entered color string is returned back in this callback.
@@ -40,6 +49,22 @@ class ColorCodeField extends StatefulWidget {
 
   /// The Color code editing field has focus.
   final ValueChanged<bool> onEditFocused;
+
+  /// Request focus on the color code editing field.
+  final bool requestFocus;
+
+  /// Whether the color code entry field should have no color when focused.
+  ///
+  /// If the option to make the color code field have the same color as the
+  /// selected color is enabled via [colorCodeHasColor], it makes it look
+  /// and function like a big color indicator that shows the selected color.
+  ///
+  /// It can also make the edit of the color code confusing, as its color on
+  /// purpose also changes as you edit and enter a new color value. If you
+  /// find this behavior confusing and want to make the color code field
+  /// always have no color, regardless of the selected color, then set
+  /// this option to true.
+  final bool focusedEditHasNoColor;
 
   /// TextStyle of the color code display and edit field.
   ///
@@ -56,7 +81,7 @@ class ColorCodeField extends StatefulWidget {
   ///
   /// This makes the color code entry field a larger current color indicator
   /// area that changes color as the color value is changed.
-  /// The text color of the filed will adjust to for best contrast as will
+  /// The text color of the field will adjust for best contrast as will
   /// the opacity indicator text. Enabling this feature will override any
   /// color specified in [textStyle] and [prefixStyle] but
   /// their styles will otherwise be kept as specified.
@@ -66,15 +91,15 @@ class ColorCodeField extends StatefulWidget {
 
   /// Defines icons for the color picker title bar and its actions.
   ///
-  /// Defaults to ColorPickerToolIcons().
+  /// Defaults to [ColorPickerActionButtons].
   final ColorPickerActionButtons toolIcons;
 
   /// Defines the color picker's copy and paste behavior.
   ///
-  /// Defaults to ColorPickerPasteBehavior().
+  /// Defaults to [ColorPickerCopyPasteBehavior].
   final ColorPickerCopyPasteBehavior copyPasteBehavior;
 
-  /// Controls if tooltips are shown or not
+  /// Controls if tooltips are shown or not.
   ///
   /// Defaults to true.
   final bool enableTooltips;
@@ -83,14 +108,14 @@ class ColorCodeField extends StatefulWidget {
   ///
   /// If we are just editing text in the control it should not, we just send
   /// the data out to update any widget using the [color].
-  /// However, when we get a new color due to external action is should update.
+  /// However, when we get a new color due to external action it should update.
   /// This is similar to the same property on the wheel.
   ///
   /// Defaults to false.
   final bool shouldUpdate;
 
   @override
-  _ColorCodeFieldState createState() => _ColorCodeFieldState();
+  State<ColorCodeField> createState() => _ColorCodeFieldState();
 }
 
 // Color code display and entry field.
@@ -123,16 +148,23 @@ class _ColorCodeFieldState extends State<ColorCodeField> {
       color = widget.color;
       textController.text = color.hex;
     }
+    if (widget.requestFocus) {
+      FocusScope.of(context).requestFocus(textFocusNode);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme scheme = theme.colorScheme;
+    final bool isLight = theme.brightness == Brightness.light;
+
     // The tooltip for copying the color code via the icon button
     String? copyTooltip;
 
     if (widget.enableTooltips) {
       // Get current platform.
-      final TargetPlatform platform = Theme.of(context).platform;
+      final TargetPlatform platform = theme.platform;
       // Get the Material localizations.
       final MaterialLocalizations translate = MaterialLocalizations.of(context);
       // If shortcut key enabled, make a shortcut platform aware info tooltip.
@@ -141,43 +173,51 @@ class _ColorCodeFieldState extends State<ColorCodeField> {
         copyKeyTooltip = platformControlKey(platform, 'C');
       }
       // Make the Copy tooltip.
-      copyTooltip =
-          (widget.copyPasteBehavior.copyTooltip ?? translate.copyButtonLabel) +
-              copyKeyTooltip;
+      copyTooltip = (widget.copyPasteBehavior.copyTooltip ?? translate.copyButtonLabel) + copyKeyTooltip;
     }
 
     // Define opinionated styles for the color code display and entry field.
-    final bool isLight = Theme.of(context).brightness == Brightness.light;
-    final Color fieldBackground = widget.colorCodeHasColor
+    final Color unfocusedBackground = widget.colorCodeHasColor
         ? color
         : isLight
-            ? Colors.black.withAlpha(11)
-            : Colors.white.withAlpha(33);
+        ? Colors.black.withAlpha(11)
+        : Colors.white.withAlpha(33);
 
-    final bool isLightBackground =
-        ThemeData.estimateBrightnessForColor(fieldBackground) ==
-            Brightness.light;
+    final bool focusedIsNotColored =
+        (textFocusNode.hasFocus && !widget.readOnly && widget.focusedEditHasNoColor) || !widget.colorCodeHasColor;
+    final Color focusedBackground = focusedIsNotColored
+        ? isLight
+              ? Colors.black.withAlpha(11)
+              : Colors.white.withAlpha(33)
+        : color;
+
+    final bool isLightBackground = ThemeData.estimateBrightnessForColor(unfocusedBackground) == Brightness.light;
     final Color textColor = isLight
-        ? (isLightBackground || fieldBackground.opacity < 0.5)
-            ? Colors.black
-            : Colors.white
-        : (!isLightBackground || fieldBackground.opacity < 0.5)
-            ? Colors.white
-            : Colors.black;
+        ? (isLightBackground || unfocusedBackground.a < 0.5)
+              ? Colors.black
+              : Colors.white
+        : (!isLightBackground || unfocusedBackground.a < 0.5)
+        ? Colors.white
+        : Colors.black;
 
-    final Color fieldBorder =
-        isLight ? Colors.black.withAlpha(33) : Colors.white.withAlpha(55);
+    final Color focusedTextColor = focusedIsNotColored ? scheme.onSurface : textColor;
+
+    final Color fieldBorder = isLight ? Colors.black.withAlpha(33) : Colors.white.withAlpha(55);
+    final Color focusedBorder = theme.colorScheme.onSurface;
 
     // Set the default text style to bodyMedium if not given.
-    TextStyle effectiveStyle = widget.textStyle ??
-        Theme.of(context).textTheme.bodyMedium ??
-        const TextStyle(fontSize: 14);
+    TextStyle effectiveStyle =
+        widget.textStyle ?? Theme.of(context).textTheme.bodyMedium ?? const TextStyle(fontSize: 14);
 
     TextStyle effectivePrefixStyle = widget.prefixStyle ?? effectiveStyle;
 
-    if (widget.colorCodeHasColor) {
+    if (widget.colorCodeHasColor && !textFocusNode.hasFocus) {
       effectiveStyle = effectiveStyle.copyWith(color: textColor);
       effectivePrefixStyle = effectivePrefixStyle.copyWith(color: textColor);
+    }
+    if (widget.colorCodeHasColor && textFocusNode.hasFocus) {
+      effectiveStyle = effectiveStyle.copyWith(color: focusedTextColor);
+      effectivePrefixStyle = effectivePrefixStyle.copyWith(color: focusedTextColor);
     }
 
     // Compute color code field size based on the used font size. Might not
@@ -187,7 +227,16 @@ class _ColorCodeFieldState extends State<ColorCodeField> {
     final double fontSize = effectiveStyle.fontSize ?? 14.0;
     final double iconSize = fontSize * 1.1;
     final double borderRadius = fontSize * 1.2;
-    final double fieldWidth = fontSize * 10;
+    final double fieldWidth = fontSize * 10.5;
+
+    // coverage:ignore-start
+    // `_debug` is `const … && false`, so this block never runs.
+    if (_debug) {
+      debugPrint('TextField: Build color               =${widget.color}');
+      debugPrint('TextField: Build unfocusedBackground =$unfocusedBackground');
+      debugPrint('TextField: Build focusedBackground   =$focusedBackground');
+    }
+    // coverage:ignore-end
 
     return SizedBox(
       width: fieldWidth,
@@ -196,7 +245,14 @@ class _ColorCodeFieldState extends State<ColorCodeField> {
       child: DryIntrinsicWidth(
         child: Focus(
           // Tell the parent when the text edit field has focus.
-          onFocusChange: widget.onEditFocused,
+          onFocusChange: (bool focus) {
+            widget.onEditFocused(focus);
+            if (!focus) {
+              // Call setState when unfocused to set the TextField color
+              // back to the unfocused color.
+              setState(() {});
+            }
+          },
           child: TextField(
             enabled: true,
             readOnly: widget.readOnly,
@@ -206,11 +262,12 @@ class _ColorCodeFieldState extends State<ColorCodeField> {
             maxLength: 6,
             maxLengthEnforcement: MaxLengthEnforcement.enforced,
             // Remove line that shows entered chars when maxLength is used.
-            buildCounter: (BuildContext context,
-                    {required int currentLength,
-                    int? maxLength,
-                    required bool isFocused}) =>
-                null,
+            buildCounter: (
+              BuildContext context, {
+              required int currentLength,
+              int? maxLength,
+              required bool isFocused,
+            }) => null,
             style: effectiveStyle,
             // Only affects the type of keyboard shown on devices, does not
             // make the input uppercase.
@@ -243,14 +300,16 @@ class _ColorCodeFieldState extends State<ColorCodeField> {
               prefixText: _editColorPrefix,
               prefixStyle: effectivePrefixStyle,
               filled: true,
-              fillColor: fieldBackground,
+              fillColor: textFocusNode.hasFocus ? focusedBackground : unfocusedBackground,
+              hoverColor: widget.readOnly ? Colors.transparent : null,
               border: OutlineInputBorder(
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.circular(borderRadius),
               ),
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: fieldBorder,
+                  color: widget.readOnly ? fieldBorder : focusedBorder,
+                  width: widget.readOnly ? 1 : 1.5,
                 ),
                 borderRadius: BorderRadius.circular(borderRadius),
               ),
@@ -282,9 +341,7 @@ class _ColorCodeFieldState extends State<ColorCodeField> {
             //
             onChanged: (String textColor) {
               setState(() {
-                color = textColor
-                    .toColorShort(widget.copyPasteBehavior.parseShortHexCode)
-                    .withOpacity(color.opacity);
+                color = textColor.toColorShort(widget.copyPasteBehavior.parseShortHexCode).withValues(alpha: color.a);
               });
               widget.onColorChanged(color);
             },
@@ -292,7 +349,7 @@ class _ColorCodeFieldState extends State<ColorCodeField> {
               setState(() {
                 color = textController.text
                     .toColorShort(widget.copyPasteBehavior.parseShortHexCode)
-                    .withOpacity(color.opacity);
+                    .withValues(alpha: color.a);
               });
               textController.text = color.hex;
               widget.onColorChanged(color);
@@ -311,19 +368,14 @@ class _ColorCodeFieldState extends State<ColorCodeField> {
     switch (widget.copyPasteBehavior.copyFormat) {
       case ColorPickerCopyFormat.dartCode:
         colorString = '0x${color.hexAlpha}';
-        break;
       case ColorPickerCopyFormat.hexRRGGBB:
         colorString = color.hex;
-        break;
       case ColorPickerCopyFormat.hexAARRGGBB:
         colorString = color.hexAlpha;
-        break;
       case ColorPickerCopyFormat.numHexRRGGBB:
         colorString = '#${color.hex}';
-        break;
       case ColorPickerCopyFormat.numHexAARRGGBB:
         colorString = '#${color.hexAlpha}';
-        break;
     }
     final ClipboardData data = ClipboardData(text: colorString);
     await Clipboard.setData(data);
@@ -351,8 +403,7 @@ class _ColorCodeFieldState extends State<ColorCodeField> {
 // This TextField formatter converts all input to uppercase.
 class _UpperCaseTextFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     return TextEditingValue(
       text: newValue.text.toUpperCase(),
       selection: newValue.selection,

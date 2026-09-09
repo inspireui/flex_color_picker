@@ -1,9 +1,6 @@
-// ignore_for_file: use_super_parameters
-
-import 'package:flutter/material.dart';
-
-import '../../flex_color_picker.dart';
-import '../functions/picker_functions.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
+import 'package:flex_color_picker/src/functions/picker_functions.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// TonalPaletteColors widget.
 ///
@@ -11,10 +8,9 @@ import '../functions/picker_functions.dart';
 class TonalPaletteColors extends StatefulWidget {
   /// Default const constructor.
   const TonalPaletteColors({
-    Key? key,
+    super.key,
     required this.spacing,
     required this.runSpacing,
-    required this.columnSpacing,
     required this.selectedColor,
     required this.onSelectColor,
     required this.tonalShouldUpdate,
@@ -26,16 +22,14 @@ class TonalPaletteColors extends StatefulWidget {
     required this.elevation,
     required this.selectedColorIcon,
     required this.selectedRequestsFocus,
-  }) : super(key: key);
+    required this.tonalPaletteFixedMinChroma,
+  });
 
   /// The spacing between the color pick items.
   final double spacing;
 
   /// The run spacing between the color pick items when wrapped on several rows.
   final double runSpacing;
-
-  /// The spacing after the main colors.
-  final double columnSpacing;
 
   /// The selected color.
   final Color selectedColor;
@@ -67,15 +61,18 @@ class TonalPaletteColors extends StatefulWidget {
   /// Icon used to mark selected color.
   final IconData selectedColorIcon;
 
-  /// Set to true, if a an indicator should request focus if it is selected.
+  /// Set to true if an indicator should request focus if it is selected.
   ///
-  /// The indicator will always request focus when it clicked and selected,
+  /// The indicator will always request focus when it is clicked and selected,
   /// setting this value to true is to make it request focus when it is drawn.
   /// This is used to set focus to the selected color, but only when
   /// the picker is redrawn.
   ///
   /// Defaults to false.
   final bool selectedRequestsFocus;
+
+  /// Whether to use fixed min chroma for tonal palette.
+  final bool tonalPaletteFixedMinChroma;
 
   @override
   State<TonalPaletteColors> createState() => _TonalPaletteColorsState();
@@ -87,46 +84,47 @@ class _TonalPaletteColorsState extends State<TonalPaletteColors> {
   @override
   void initState() {
     super.initState();
-    tonalColors = getTonalColors(widget.selectedColor);
+    tonalColors = getTonalColors(
+      widget.selectedColor,
+      widget.tonalPaletteFixedMinChroma,
+    );
   }
 
   @override
   void didUpdateWidget(TonalPaletteColors oldWidget) {
     if (widget.tonalShouldUpdate) {
-      tonalColors = getTonalColors(widget.selectedColor);
+      tonalColors = getTonalColors(
+        widget.selectedColor,
+        widget.tonalPaletteFixedMinChroma,
+      );
     }
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   Widget build(BuildContext context) {
-    final double effectiveBorderRadius =
-        widget.borderRadius ?? widget.width / 4.0;
-    return Padding(
-      padding: EdgeInsets.only(bottom: widget.columnSpacing),
-      child: Wrap(
-        spacing: widget.spacing,
-        runSpacing: widget.runSpacing,
-        children: <Widget>[
-          for (final Color color in tonalColors)
-            ColorIndicator(
-              isSelected: widget.selectedColor == color ||
-                  widget.selectedColor.value == color.value,
-              color: color,
-              width: widget.width,
-              height: widget.height,
-              borderRadius: effectiveBorderRadius,
-              hasBorder: widget.hasBorder,
-              borderColor: widget.borderColor,
-              elevation: widget.elevation,
-              selectedIcon: widget.selectedColorIcon,
-              onSelect: () {
-                widget.onSelectColor(color);
-              },
-              selectedRequestsFocus: widget.selectedRequestsFocus,
-            ),
-        ],
-      ),
+    final double effectiveBorderRadius = widget.borderRadius ?? widget.width / 4.0;
+    return Wrap(
+      spacing: widget.spacing,
+      runSpacing: widget.runSpacing,
+      children: <Widget>[
+        for (final Color color in tonalColors)
+          ColorIndicator(
+            isSelected: widget.selectedColor == color || widget.selectedColor.value32bit == color.value32bit,
+            color: color,
+            width: widget.width,
+            height: widget.height,
+            borderRadius: effectiveBorderRadius,
+            hasBorder: widget.hasBorder,
+            borderColor: widget.borderColor,
+            elevation: widget.elevation,
+            selectedIcon: widget.selectedColorIcon,
+            onSelect: () {
+              widget.onSelectColor(color);
+            },
+            selectedRequestsFocus: widget.selectedRequestsFocus,
+          ),
+      ],
     );
   }
 }

@@ -1,9 +1,8 @@
+import 'package:color_picker_example/demo/pods/pods.dart';
+import 'package:color_picker_example/demo/screens/color_picker/color_picker_dialog.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../pods/pods.dart';
-import '../color_picker_dialog.dart';
+import 'package:material_ui/material_ui.dart';
 
 @immutable
 class MetaPickerColorIndicator extends ConsumerWidget {
@@ -13,10 +12,10 @@ class MetaPickerColorIndicator extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
       title: const Text('Control the ColorPicker below'),
-      subtitle: Wrap(
+      subtitle: const Wrap(
         runSpacing: 4,
         spacing: 4,
-        children: const <Widget>[
+        children: <Widget>[
           ColorControlBox(color: Color(0xFF43A047)),
           ColorControlBox(color: Color(0xCAFF5252)),
           ColorControlBox(color: Color(0xFFF7F7F7)),
@@ -36,7 +35,6 @@ class MetaPickerColorIndicator extends ConsumerWidget {
         onSelectFocus: false,
         onSelect: () async {
           final Color colorBeforeDialog = ref.read(cardPickerColorPod);
-          // ignore: use_build_context_synchronously
           if (!(await colorPickerDialog(
             context,
             ref,

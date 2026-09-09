@@ -1,19 +1,16 @@
-// ignore_for_file: use_super_parameters
-
 import 'dart:async';
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
+import 'package:flex_color_picker/src/widgets/opacity/opacity_slider_thumb.dart';
+import 'package:flex_color_picker/src/widgets/opacity/opacity_slider_track.dart';
+import 'package:material_ui/material_ui.dart';
 
-import 'opacity_slider_thumb.dart';
-import 'opacity_slider_track.dart';
-
-/// A custom slider used adjust the opacity value of a RGB color.
+/// A custom slider used to adjust the opacity value of a RGB color.
 ///
-/// The slider has a typical checkered background often used in imaging
-/// editing program to show the degree of opacity an image has.
+/// The slider has a typical checkered background often used in image
+/// editing programs to show the degree of opacity an image has.
 ///
-/// The RGB [Color] we are adjusting the opacity for, is passed in the
+/// The RGB [ui.Color] we are adjusting the opacity for, is passed in the
 /// [color] property and drawn as opacity gradient over the checkered
 /// background to visually indicate how opaque or transparent the current
 /// opacity value is. The opacity value is shown as 0 ... 100 (%) on
@@ -22,14 +19,14 @@ import 'opacity_slider_track.dart';
 /// The slider has 255 steps so that it is possible to select any corresponding
 /// 8-bit alpha channel value. If the opacity is applied to a color using
 /// `withOpacity` and the alpha value displayed in the resulting color, this
-/// be observed.
+/// can be observed.
 ///
-/// The opacity value is returned via the onChanged called back. There are
+/// The opacity value is returned via the onChanged callback. There are
 /// also callbacks for [onChangeStart] and [onChangeEnd].
 class OpacitySlider extends StatelessWidget {
   /// Create the opacity slider.
   const OpacitySlider({
-    Key? key,
+    super.key,
     required this.opacity,
     required this.color,
     required this.onChanged,
@@ -38,11 +35,8 @@ class OpacitySlider extends StatelessWidget {
     this.thumbRadius = 16,
     this.trackHeight = 22,
     this.focusNode,
-  })  : assert(thumbRadius >= 12 && thumbRadius <= 30,
-            'The thumbRadius must be 12 to 30.'),
-        assert(trackHeight >= 10 && trackHeight <= 50,
-            'The trackHeight must be 10 to 50.'),
-        super(key: key);
+  }) : assert(thumbRadius >= 12 && thumbRadius <= 30, 'The thumbRadius must be 12 to 30.'),
+       assert(trackHeight >= 10 && trackHeight <= 50, 'The trackHeight must be 10 to 50.');
 
   /// Current opacity value.
   final double opacity;
@@ -77,7 +71,7 @@ class OpacitySlider extends StatelessWidget {
 
   /// The height of the slider track.
   ///
-  /// Defaults to 36
+  /// Defaults to 22.
   final double trackHeight;
 
   /// An optional focus node to use as the focus node for this widget.
@@ -106,7 +100,7 @@ class OpacitySlider extends StatelessWidget {
             data: _opacitySliderTheme(color, trackHeight, thumbRadius),
             child: Slider(
               value: opacity,
-              // If we do 255 divisions we can ca get a discrete step for each
+              // If we do 255 divisions we can get a discrete step for each
               // alpha value, even if we only display int 0...100 as opacity.
               divisions: 255,
               onChanged: onChanged,
@@ -126,30 +120,30 @@ class OpacitySlider extends StatelessWidget {
 ui.Image? _trackImage;
 
 /// Load the background grid image for the opacity slider as a dart.ui
-/// [Image] from assets.
+/// [ui.Image] from assets.
 Future<ui.Image> getTrackImage() {
   if (_trackImage != null) return Future<ui.Image>.value(_trackImage);
   final Completer<ui.Image> completer = Completer<ui.Image>();
   const AssetImage('assets/opacity.png', package: 'flex_color_picker')
       .resolve(ImageConfiguration.empty)
-      .addListener(ImageStreamListener((ImageInfo info, bool _) {
-    _trackImage = info.image;
-    completer.complete(_trackImage);
-  }));
+      .addListener(
+        ImageStreamListener((ImageInfo info, bool _) {
+          _trackImage = info.image;
+          completer.complete(_trackImage);
+        }),
+      );
   return completer.future;
 }
 
 /// To style the opacity slider we use a theme that changes with
 /// passed in color value that the slider is manipulating opacity for.
-ThemeData _opacitySliderTheme(
-    Color color, double trackHeight, double thumbRadius) {
+ThemeData _opacitySliderTheme(Color color, double trackHeight, double thumbRadius) {
   // The thumbColor used for outline and text on [color] must have good
   // contrast with [color] so we can se it around the thumb and for text
   // written on top of the thumb fill [color].
-  final Color thumbTextColor =
-      ThemeData.estimateBrightnessForColor(color) == Brightness.light
-          ? const Color(0xFF333333)
-          : Colors.white;
+  final Color thumbTextColor = ThemeData.estimateBrightnessForColor(color) == Brightness.light
+      ? const Color(0xFF333333)
+      : Colors.white;
   return ThemeData.light().copyWith(
     sliderTheme: SliderThemeData(
       trackHeight: trackHeight,

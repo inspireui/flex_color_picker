@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
-
-import '../../flex_color_picker.dart';
-import '../functions/picker_functions.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// MainColors widget.
 ///
@@ -45,7 +43,7 @@ class MainColors extends StatelessWidget {
   /// Void callback called when a color is selected.
   final ValueChanged<Color> onSelectColor;
 
-  /// Set to trued if index 850 is to be included in the main shades.
+  /// Set to true if index 850 is to be included in the main shades.
   final bool includeIndex850;
 
   /// Width of the color pick item.
@@ -69,12 +67,12 @@ class MainColors extends StatelessWidget {
   /// Icon used to mark selected color.
   final IconData selectedColorIcon;
 
-  /// Set to true, if a an indicator should request focus if it is selected.
+  /// Set to true if an indicator should request focus if it is selected.
   ///
-  /// The indicator will always request focus when it clicked and selected,
+  /// The indicator will always request focus when it is clicked and selected,
   /// setting this value to true is to make it request focus when it is drawn.
   /// This is used to set focus to the selected color, but only when
-  /// the piker is redrawn.
+  /// the picker is redrawn.
   ///
   /// Defaults to false.
   final bool selectedRequestsFocus;
@@ -90,11 +88,9 @@ class MainColors extends StatelessWidget {
         children: <Widget>[
           for (final ColorSwatch<Object> colorSwatch in activeColorSwatchList)
             ColorIndicator(
-              isSelected: isShadeOfMain(
-                colorSwatch,
-                selectedColor,
-                includeIndex850,
-              ),
+              isSelected:
+                  (selectedColor == colorSwatch[500] && colorSwatch is MaterialColor) ||
+                  (selectedColor == colorSwatch[200] && colorSwatch is MaterialAccentColor),
               color: colorSwatch,
               width: width,
               height: height,
@@ -104,8 +100,7 @@ class MainColors extends StatelessWidget {
               elevation: elevation,
               selectedIcon: selectedColorIcon,
               onSelect: () {
-                onSelectColor(
-                    colorSwatch[500] ?? colorSwatch[200] ?? Colors.black);
+                onSelectColor(colorSwatch[500] ?? colorSwatch[200] ?? Colors.black);
               },
               selectedRequestsFocus: selectedRequestsFocus,
             ),

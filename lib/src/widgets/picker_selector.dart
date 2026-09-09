@@ -1,9 +1,6 @@
-// ignore_for_file: use_super_parameters
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-
-import '../models/color_picker_type.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flex_color_picker/src/models/color_picker_type.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A widget used to select the active color picker
 ///
@@ -12,7 +9,7 @@ import '../models/color_picker_type.dart';
 class SelectPicker extends StatelessWidget {
   /// Default const constructor.
   const SelectPicker({
-    Key? key,
+    super.key,
     required this.pickers,
     required this.pickerLabels,
     required this.picker,
@@ -20,12 +17,12 @@ class SelectPicker extends StatelessWidget {
     this.thumbColor,
     this.textStyle,
     this.columnSpacing = 8,
-  }) : super(key: key);
+  });
 
   /// A map of used picker types to select which segments to show and use.
   final Map<ColorPickerType, bool> pickers;
 
-  /// THe labels for the picker segments.
+  /// The labels for the picker segments.
   final Map<ColorPickerType, String> pickerLabels;
 
   /// Current active picker.
@@ -39,9 +36,9 @@ class SelectPicker extends StatelessWidget {
   /// Uses cupertino default light and dark style if not provided.
   final Color? thumbColor;
 
-  /// Text style of the text items in the picker
+  /// Text style of the text items in the picker.
   ///
-  /// If not provided, default to `Theme.of(context).textTheme.bodySmall`.
+  /// If not provided, defaults to `Theme.of(context).textTheme.bodySmall`.
   final TextStyle? textStyle;
 
   /// The spacing after the picker. Defaults to 8.
@@ -50,11 +47,11 @@ class SelectPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Set default text style for the segmented slider control.
-    final TextStyle segmentTextStyle = textStyle ??
-        Theme.of(context).textTheme.bodySmall ??
-        const TextStyle(fontSize: 12);
+    final TextStyle segmentTextStyle =
+        textStyle ?? Theme.of(context).textTheme.bodySmall ?? const TextStyle(fontSize: 12);
 
-    final Color effectiveThumbColor = thumbColor ??
+    final Color effectiveThumbColor =
+        thumbColor ??
         const CupertinoDynamicColor.withBrightness(
           color: Color(0xFFFFFFFF),
           darkColor: Color(0xFF636366),
@@ -62,10 +59,9 @@ class SelectPicker extends StatelessWidget {
 
     final Color? effectiveThumbOnColor = thumbColor == null
         ? null
-        : ThemeData.estimateBrightnessForColor(effectiveThumbColor) ==
-                Brightness.light
-            ? Colors.black
-            : Colors.white;
+        : ThemeData.estimateBrightnessForColor(effectiveThumbColor) == Brightness.light
+        ? Colors.black
+        : Colors.white;
 
     return SizedBox(
       width: double.infinity,
@@ -128,6 +124,17 @@ class SelectPicker extends StatelessWidget {
                       : segmentTextStyle,
                 ),
               ),
+            if (pickers[ColorPickerType.customSecondary]!)
+              ColorPickerType.customSecondary: Padding(
+                padding: const EdgeInsets.all(5),
+                child: Text(
+                  pickerLabels[ColorPickerType.customSecondary] ?? '',
+                  textAlign: TextAlign.center,
+                  style: picker == ColorPickerType.customSecondary
+                      ? segmentTextStyle.copyWith(color: effectiveThumbOnColor)
+                      : segmentTextStyle,
+                ),
+              ),
             if (pickers[ColorPickerType.wheel]!)
               ColorPickerType.wheel: Padding(
                 padding: const EdgeInsets.all(5),
@@ -140,7 +147,8 @@ class SelectPicker extends StatelessWidget {
                 ),
               ),
           },
-          thumbColor: thumbColor ??
+          thumbColor:
+              thumbColor ??
               const CupertinoDynamicColor.withBrightness(
                 color: Color(0xFFFFFFFF),
                 darkColor: Color(0xFF636366),

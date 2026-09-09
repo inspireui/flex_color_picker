@@ -28,14 +28,13 @@ on:
     branches: [none]
     paths-ignore:
       - "**.md"
-  # release:
-  #   types: [published]
+
 jobs:
   tests_build:
     name: Analyze, test and build the example and web app
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Flutter and Dart SDK
         uses: subosito/flutter-action@v2
         with:
@@ -55,7 +54,7 @@ jobs:
       - name: Analyze Dart source
         run: dart analyze
 
-      - name: Show outdated packges
+      - name: Show outdated packages
         run: flutter pub outdated
 
       - name: Verify that Dart formatting is used, fail if not
@@ -65,10 +64,12 @@ jobs:
         run: flutter test --coverage
 
       - name: Upload test coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: coverage/lcov.info
+          files: coverage/lcov.info
+          disable_search: true
+          fail_ci_if_error: true
 
       - name: Install rpl
         run: sudo apt-get install rpl
@@ -79,7 +80,7 @@ jobs:
         run: flutter clean && cd example && flutter clean
 
       - name: EXAMPLE WEB release build using CanvasKit
-        run: cd example && flutter build web --web-renderer=canvaskit --release --target=lib/main.dart
+        run: cd example && flutter build web --release --target=lib/main.dart
 
       # Web Example Build
 
@@ -87,4 +88,4 @@ jobs:
         run: flutter clean && cd example && flutter clean
 
       - name: WEB EXAMPLE release build using CanvasKit
-        run: cd example && flutter build web --web-renderer=canvaskit --base-href "/flexcolorpicker/" --release --target=lib/demo/main.dart
+        run: cd example && flutter build web --base-href "/flexcolorpicker/" --release --target=lib/demo/main.dart

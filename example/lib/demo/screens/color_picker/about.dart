@@ -1,8 +1,9 @@
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'dart:async';
 
-import '../../utils/app.dart';
+import 'package:color_picker_example/demo/utils/app.dart';
+import 'package:flutter/gestures.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // An about icon button used on the example's app bar, but only if the
 // app is built for web or desktop. Main usage is to show licenses on the Web
@@ -26,10 +27,9 @@ class AboutIconButton extends StatelessWidget {
 /// that exist(ed) in the Flutter Gallery App.
 void showAppAboutDialog(BuildContext context) {
   final ThemeData themeData = Theme.of(context);
-  final TextStyle aboutTextStyle = themeData.textTheme.bodyLarge!;
-  final TextStyle footerStyle = themeData.textTheme.bodySmall!;
-  final TextStyle linkStyle = themeData.textTheme.bodyLarge!
-      .copyWith(color: themeData.colorScheme.primary);
+  final TextStyle aboutTextStyle = themeData.textTheme.bodyLarge ?? const TextStyle();
+  final TextStyle footerStyle = themeData.textTheme.bodySmall ?? const TextStyle();
+  final TextStyle linkStyle = themeData.textTheme.bodyLarge!.copyWith(color: themeData.colorScheme.primary);
 
   showAboutDialog(
     context: context,
@@ -49,8 +49,10 @@ void showAppAboutDialog(BuildContext context) {
             children: <TextSpan>[
               TextSpan(
                 style: aboutTextStyle,
-                text: 'This example shows the features of the '
-                    '${App.appName} package. To learn more, check '
+                text:
+                    'This example shows the features of the '
+                    '${App.appName} package.\n'
+                    'To learn more, check '
                     'out the package on ',
               ),
               LinkTextSpan(
@@ -60,12 +62,15 @@ void showAppAboutDialog(BuildContext context) {
               ),
               TextSpan(
                 style: aboutTextStyle,
-                text: '. It contains extensive documentation and the source '
+                text:
+                    '.\n'
+                    'It contains extensive documentation and the source '
                     'of this example application.\n\n',
               ),
               TextSpan(
                 style: footerStyle,
-                text: 'Live Web demo built with ${App.flutterVersion}, '
+                text:
+                    'Built with Flutter ${App.flutterVersion}, '
                     'using ${App.packageVersion}\n\n',
               ),
             ],
@@ -76,7 +81,7 @@ void showAppAboutDialog(BuildContext context) {
   );
 }
 
-/// An URL link TextSpan that contain an URL link that can be used as a
+/// A URL link [TextSpan] that contains a URL that can be used as a
 /// working URL link text when using it in a [Text.rich] or lower
 /// level [RichText] widget.
 class LinkTextSpan extends TextSpan {
@@ -89,10 +94,10 @@ class LinkTextSpan extends TextSpan {
   // manage the recognizer from outside the TextSpan, e.g. in the State of a
   // stateful widget that then hands the recognizer to the TextSpan.
   LinkTextSpan({super.style, required Uri uri, required String super.text})
-      : super(
-          recognizer: TapGestureRecognizer()
-            ..onTap = () {
-              launchUrl(uri);
-            },
-        );
+    : super(
+        recognizer: TapGestureRecognizer()
+          ..onTap = () {
+            unawaited(launchUrl(uri));
+          },
+      );
 }

@@ -1,29 +1,30 @@
+import 'package:flex_color_picker/src/functions/picker_functions.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-
-import '../functions/picker_functions.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart'
+    show ListTile, PopupMenuEntry, PopupMenuItem, PopupMenuThemeData, Theme, showMenu;
 
 /// A context popup menu.
 ///
 /// Wrap a child with [ContextPopupMenu] and provide it a list of
-/// [PopupMenuEntry], typically it is a [PopupMenuItem] where each item have a
+/// [PopupMenuEntry], typically it is a [PopupMenuItem] where each item has a
 /// unique value. Often the [PopupMenuItem] has a child of type [ListTile], with
-/// and int as value for its list index. The child can also be a custom widget
+/// an int as value for its list index. The child can also be a custom widget
 /// with any type of row content or even images, their values could be an
 /// enum for its selection as well.
 ///
 /// The popup menu with the provided entries will show up next to the long press
 /// location on the child in a way that fits best on the screen and child.
 ///
-/// The [onSelected] returns the associated value of the selected
+/// The `onSelected` callback returns the associated value of the selected
 /// [PopupMenuEntry]. If the menu is closed without selection, which happens
-/// when user clicks outside it, null is returned. In all cases an [onSelected]
+/// when user clicks outside it, null is returned. In all cases the callback
 /// event also signals that the menu was closed.
 ///
 /// The optional [onOpen] callback event is triggered when the menu is opened.
 ///
 /// The menu can be styled with [PopupMenuThemeData] either via
-/// Theme.of(context).PopupMenuThemeData globally for the app and all other
+/// `Theme.of(context).popupMenuTheme` globally for the app and all other
 /// popup menus in it, or you can wrap just your custom popup widget that
 /// composes its content using [ContextPopupMenu] with a [Theme] that defines
 /// the [PopupMenuThemeData] just for that popup menu widget.
@@ -35,21 +36,21 @@ class ContextPopupMenu<T> extends StatefulWidget {
   const ContextPopupMenu({
     super.key,
     required this.items,
-    required this.onSelected,
+    required ValueChanged<T?> onSelected,
     this.onOpen,
     required this.child,
     this.useLongPress = false,
     this.useSecondaryTapDown = false,
     this.useSecondaryOnDesktopLongOnDevice = false,
     this.useSecondaryOnDesktopLongOnDeviceAndWeb = true,
-  });
+  }) : _onSelected = onSelected;
 
   /// The popup menu entries for the long press menu.
   final List<PopupMenuEntry<T>> items;
 
   /// ValueChanged callback with selected item in the long press menu.
   /// Is null if menu closed without selection by clicking outside the menu.
-  final ValueChanged<T?> onSelected;
+  final Function _onSelected;
 
   /// Optional void callback, called when the long press menu is opened.
   /// A way to tell when a long press opened the menu.
@@ -101,14 +102,14 @@ class _ContextPopupMenuState<T> extends State<ContextPopupMenu<T>> {
   @override
   Widget build(BuildContext context) {
     final TargetPlatform platform = Theme.of(context).platform;
-    final bool useLongPress = widget.useLongPress ||
+    final bool useLongPress =
+        widget.useLongPress ||
         (widget.useSecondaryOnDesktopLongOnDevice && !isDesktop(platform) ||
-            (widget.useSecondaryOnDesktopLongOnDeviceAndWeb &&
-                (!isDesktop(platform) || kIsWeb)));
-    final bool useSecondaryClick = widget.useSecondaryTapDown ||
+            (widget.useSecondaryOnDesktopLongOnDeviceAndWeb && (!isDesktop(platform) || kIsWeb)));
+    final bool useSecondaryClick =
+        widget.useSecondaryTapDown ||
         (widget.useSecondaryOnDesktopLongOnDevice && isDesktop(platform) ||
-            (widget.useSecondaryOnDesktopLongOnDeviceAndWeb &&
-                (isDesktop(platform) && !kIsWeb)));
+            (widget.useSecondaryOnDesktopLongOnDeviceAndWeb && (isDesktop(platform) && !kIsWeb)));
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -132,20 +133,19 @@ class _ContextPopupMenuState<T> extends State<ContextPopupMenu<T>> {
 
   Future<void> _showMenu(Offset position) async {
     widget.onOpen?.call();
-    final RenderBox? overlay =
-        Overlay.maybeOf(context)?.context.findRenderObject() as RenderBox?;
-    if (overlay != null) {
+    final RenderObject? renderObject = Overlay.maybeOf(context)?.context.findRenderObject();
+    if (renderObject is RenderBox) {
       final T? value = await showMenu<T>(
         context: context,
         items: widget.items,
         position: RelativeRect.fromLTRB(
           position.dx,
           position.dy,
-          overlay.size.width - position.dx,
-          overlay.size.height - position.dy,
+          renderObject.size.width - position.dx,
+          renderObject.size.height - position.dy,
         ),
       );
-      widget.onSelected(value);
+      (widget._onSelected as ValueChanged<T?>)(value);
     }
   }
 }

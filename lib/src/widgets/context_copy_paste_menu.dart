@@ -1,8 +1,5 @@
-// ignore_for_file: use_super_parameters
-
-import 'package:flutter/material.dart';
-
-import '../universal_widgets/context_popup_menu.dart';
+import 'package:flex_color_picker/src/universal_widgets/context_popup_menu.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Enum to handle copy and paste commands.
 ///
@@ -15,14 +12,14 @@ enum CopyPasteCommands {
   paste,
 }
 
-/// A cut, copy paste long press menu.
+/// A copy and paste long press menu.
 ///
 /// Not library exposed, private to the library.
 @immutable
 class ContextCopyPasteMenu extends StatelessWidget {
   /// Default const constructor.
   const ContextCopyPasteMenu({
-    Key? key,
+    super.key,
     this.useLongPress = false,
     this.useSecondaryTapDown = false,
     this.useSecondaryOnDesktopLongOnDevice = false,
@@ -38,7 +35,7 @@ class ContextCopyPasteMenu extends StatelessWidget {
     required this.onSelected,
     this.onOpen,
     required this.child,
-  }) : super(key: key);
+  });
 
   /// Use long press to show context menu.
   ///
@@ -107,7 +104,7 @@ class ContextCopyPasteMenu extends StatelessWidget {
   ///
   /// The menu is compact, so icons are small by design.
   ///
-  /// Uses any none null property in passed in [IconThemeData]. If the
+  /// Uses any non-null property in passed in [IconThemeData]. If the
   /// passed value is null, or any property in it is null, then it uses
   /// property values from `Theme.of(context).iconTheme`, if they are not
   /// null. For any null value, the following fallback defaults are used:
@@ -118,11 +115,11 @@ class ContextCopyPasteMenu extends StatelessWidget {
 
   /// The theme of the popup menu.
   ///
-  /// Uses any none null property in passed in [PopupMenuThemeData]. If the
+  /// Uses any non-null property in passed in [PopupMenuThemeData]. If the
   /// passed value is null, or any property in it is null, then it uses
   /// property values from `Theme.of(context).popupMenuTheme`, if they are not
   /// null. For any null value, the following fallback defaults are used:
-  ///   color: theme.cardColor.withOpacity(0.9)
+  ///   color: theme.cardColor.withValues(alpha: 0.9)
   ///   shape: RoundedRectangleBorder(
   ///            borderRadius: BorderRadius.circular(8),
   ///            side: BorderSide(
@@ -146,29 +143,25 @@ class ContextCopyPasteMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-
     // This is a merge of provided menuThemeData, with surrounding theme, with
     // fallback to default values.
     final PopupMenuThemeData effectiveMenuTheme = theme.popupMenuTheme.copyWith(
-      color: menuThemeData?.color ??
-          theme.popupMenuTheme.color ??
-          theme.cardColor.withOpacity(0.9),
-      shape: menuThemeData?.shape ??
+      color: menuThemeData?.color ?? theme.popupMenuTheme.color ?? theme.cardColor.withValues(alpha: 0.9),
+      shape:
+          menuThemeData?.shape ??
           theme.popupMenuTheme.shape ??
           RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-              side: BorderSide(color: theme.dividerColor)),
-      elevation:
-          menuThemeData?.elevation ?? theme.popupMenuTheme.elevation ?? 3,
-      textStyle: menuThemeData?.textStyle ??
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(color: theme.dividerColor),
+          ),
+      elevation: menuThemeData?.elevation ?? theme.popupMenuTheme.elevation ?? 3,
+      textStyle:
+          menuThemeData?.textStyle ??
           theme.popupMenuTheme.textStyle ??
           theme.textTheme.bodyMedium ??
           const TextStyle(fontSize: 14),
-      enableFeedback: menuThemeData?.enableFeedback ??
-          theme.popupMenuTheme.enableFeedback ??
-          true,
+      enableFeedback: menuThemeData?.enableFeedback ?? theme.popupMenuTheme.enableFeedback ?? true,
     );
-
     // This is a merge of provided iconThemeData, with surrounding theme, with
     // fallback to default values, color has no default, remains as null.
     final IconThemeData effectiveIconTheme = theme.iconTheme.copyWith(
@@ -176,19 +169,15 @@ class ContextCopyPasteMenu extends StatelessWidget {
       size: menuIconThemeData?.size ?? theme.iconTheme.size ?? 16,
       opacity: menuIconThemeData?.opacity ?? theme.iconTheme.opacity ?? 0.90,
     );
-
     // Get the Material localizations.
     final MaterialLocalizations translate = MaterialLocalizations.of(context);
-
     return Theme(
-      data: theme.copyWith(
-          popupMenuTheme: effectiveMenuTheme, iconTheme: effectiveIconTheme),
+      data: theme.copyWith(popupMenuTheme: effectiveMenuTheme, iconTheme: effectiveIconTheme),
       child: ContextPopupMenu<CopyPasteCommands>(
         useLongPress: useLongPress,
         useSecondaryTapDown: useSecondaryTapDown,
         useSecondaryOnDesktopLongOnDevice: useSecondaryOnDesktopLongOnDevice,
-        useSecondaryOnDesktopLongOnDeviceAndWeb:
-            useSecondaryOnDesktopLongOnDeviceAndWeb,
+        useSecondaryOnDesktopLongOnDeviceAndWeb: useSecondaryOnDesktopLongOnDeviceAndWeb,
         items: <PopupMenuEntry<CopyPasteCommands>>[
           PopupMenuItem<CopyPasteCommands>(
             value: CopyPasteCommands.copy,

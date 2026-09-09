@@ -1,8 +1,8 @@
 import 'package:flex_color_picker/flex_color_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
-/// Key constants for key-value pairs for storing the settings as well
-/// as a map with default value for each key-value pair settings.
+/// Key constants for key-value pairs used to store the settings, as well
+/// as a map with a default value for each key-value pair.
 /// The keys are also used as names for Riverpod "pod" StateProviders.
 class Keys {
   // This class is not meant to be instantiated or extended, this constructor
@@ -19,6 +19,8 @@ class Keys {
   static const String pickersEnabled = 'pickersEnabled';
   static const String enableShadesSelection = 'enableShadesSelection';
   static const String enableTonesSelection = 'enableTonesSelection';
+  static const String tonalPaletteFixedMinChroma = 'tonalPaletteFixedMinChroma';
+  static const String tonalSameSize = 'tonalSameSize';
   static const String includeIndex850 = 'includeIndex850';
   static const String enableOpacity = 'enableOpacity';
   static const String showMaterialName = 'showMaterialName';
@@ -34,6 +36,8 @@ class Keys {
   static const String showTonalSubheading = 'showTonalSubheading';
   static const String showOpacitySubheading = 'showOpacitySubheading';
   static const String showRecentSubheading = 'showRecentSubheading';
+  static const String showEditIconButton = 'showEditIconButton';
+  static const String focusedEditHasNoColor = 'focusedEditHasNoColor';
   // Picker Design Riverpod providers.
   static const String size = 'size';
   static const String borderRadius = 'borderRadius';
@@ -58,6 +62,7 @@ class Keys {
   static const String okButton = 'okButton';
   static const String closeIsLast = 'closeIsLast';
   static const String dialogActionButtons = 'dialogActionButtons';
+  static const String dialogActionOnlyOkButton = 'dialogActionOnlyOkButton';
   static const String dialogActionOrder = 'dialogActionOrder';
   static const String dialogActionIcons = 'dialogActionIcons';
   // Copy Paste Actions Riverpod providers.
@@ -95,6 +100,8 @@ class Keys {
     },
     enableShadesSelection: true,
     enableTonesSelection: true,
+    tonalPaletteFixedMinChroma: false,
+    tonalSameSize: false,
     includeIndex850: false,
     enableOpacity: true,
     showMaterialName: true,
@@ -110,6 +117,8 @@ class Keys {
     showTonalSubheading: true,
     showOpacitySubheading: false,
     showRecentSubheading: true,
+    showEditIconButton: true,
+    focusedEditHasNoColor: true,
     // Picker Design Riverpod providers.
     size: 40.0,
     borderRadius: 4.0,
@@ -134,6 +143,7 @@ class Keys {
     okButton: true,
     closeIsLast: true,
     dialogActionButtons: true,
+    dialogActionOnlyOkButton: true,
     dialogActionOrder: ColorPickerActionButtonOrder.okIsRight,
     dialogActionIcons: true,
     // Copy Paste Actions Riverpod providers.

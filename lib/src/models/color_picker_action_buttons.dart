@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Type of button used for OK or Cancel action button on a FlexColorPicker
 /// dialog.
@@ -12,6 +12,12 @@ enum ColorPickerActionButtonType {
 
   /// Use [ElevatedButton] button.
   elevated,
+
+  /// Use [FilledButton] button.
+  filled,
+
+  /// Use [FilledButton.tonal] button.
+  filledTonal,
 }
 
 /// Used to define the order of OK and Cancel buttons on the FlexColorPicker
@@ -39,10 +45,11 @@ enum ColorPickerActionButtonOrder {
 ///
 /// You can define if action buttons are on a top toolbar or only
 /// in the dialog bottom. The toolbar buttons are plain icon only
-/// buttons. For the Dialog buttons you can choose between
-/// [TextButton], [OutlinedButton] and [ElevatedButton].
+/// buttons. For the dialog buttons you can choose between
+/// [TextButton], [OutlinedButton], [ElevatedButton], [FilledButton] and
+/// [FilledButton.tonal].
 ///
-/// The used icons can be changed form default ones, as can used tooltips.
+/// The used icons can be changed from default ones, as can used tooltips.
 ///
 /// Used by FlexColorPicker to define action buttons and their style.
 @immutable
@@ -64,12 +71,15 @@ class ColorPickerActionButtons with Diagnosticable {
     this.splashRadius = 24,
     this.constraints = const BoxConstraints(minHeight: 42, minWidth: 42),
     this.dialogActionButtons = true,
+    this.dialogActionOnlyOkButton = false,
     this.dialogActionOrder = ColorPickerActionButtonOrder.okIsRight,
     this.dialogActionIcons = false,
     this.dialogCancelButtonLabel,
     this.dialogCancelButtonType = ColorPickerActionButtonType.text,
+    this.dialogCancelButtonStyle,
     this.dialogOkButtonLabel,
     this.dialogOkButtonType = ColorPickerActionButtonType.text,
+    this.dialogOkButtonStyle,
     this.useRootNavigator = true,
   });
 
@@ -139,8 +149,8 @@ class ColorPickerActionButtons with Diagnosticable {
   ///
   /// Provide your own or use the default material localization label.
   ///
-  /// Defaults to MaterialLocalizations.of(context).cancelButtonLabel if
-  /// closeTooltipIsClose is true. If false it defaults to
+  /// Defaults to MaterialLocalizations.of(context).closeButtonTooltip if
+  /// [closeTooltipIsClose] is true. If false it defaults to
   /// MaterialLocalizations.of(context).cancelButtonLabel.
   final String? closeTooltip;
 
@@ -161,7 +171,7 @@ class ColorPickerActionButtons with Diagnosticable {
   ///
   /// The toolbar is compact, so icons are small by design.
   ///
-  /// Effective style will uses any none null property in the passed in
+  /// Effective style will use any non-null property in the passed in
   /// [IconThemeData]. If the passed in theme data is null, or any property in
   /// it, is null, then the following fallback defaults are used:
   ///
@@ -185,7 +195,7 @@ class ColorPickerActionButtons with Diagnosticable {
   /// The padding around the toolbar icon buttons. The entire padded icon will
   /// react to input gestures.
   ///
-  /// Defaults to const EdgeInsets.all(0),
+  /// Defaults to [EdgeInsets.zero],
   final EdgeInsetsGeometry padding;
 
   /// Defines how the icon is positioned within the IconButton.
@@ -200,17 +210,21 @@ class ColorPickerActionButtons with Diagnosticable {
 
   /// Optional size constraints for the icon button.
   ///
-  /// Defaults to: const BoxConstraints(minHeight: 34, minWidth: 34),
+  /// Defaults to: const BoxConstraints(minHeight: 42, minWidth: 42),
   final BoxConstraints constraints;
 
-  /// If set to false, the bottom dialog action buttons att the bottom
+  /// If set to false, the dialog action buttons at the bottom
   /// are removed.
   ///
-  /// If you remove the bottom dialog action buttons, make sure to enabled the
+  /// If you remove the bottom dialog action buttons, make sure to enable the
   /// ones in the dialog toolbar.
   ///
   /// Defaults to true.
   final bool dialogActionButtons;
+
+  /// If set to true, the dialog will only have an OK button and no Cancel when
+  /// [dialogActionButtons] is true.
+  final bool dialogActionOnlyOkButton;
 
   /// Defines the order of the OK and Cancel actions buttons at the bottom
   /// of the dialog.
@@ -251,6 +265,35 @@ class ColorPickerActionButtons with Diagnosticable {
   /// Defaults to [ColorPickerActionButtonType.text] resulting in [TextButton].
   final ColorPickerActionButtonType dialogCancelButtonType;
 
+  /// Optional custom [ButtonStyle] for the Cancel button.
+  ///
+  /// If provided, this style will be applied to the cancel button, allowing
+  /// full customization of its appearance including foreground color,
+  /// background color, padding, elevation, shape, and more.
+  ///
+  /// This style will override the default theme styling for the button type.
+  /// You can use [TextButton.styleFrom], [OutlinedButton.styleFrom],
+  /// [ElevatedButton.styleFrom], [FilledButton.styleFrom], etc. to create
+  /// the style easily.
+  ///
+  /// The [dialogCancelButtonType] controls which button class is used. Just
+  /// like on the button types, you can use a raw [ButtonStyle] or any of
+  /// the `.styleFrom` factories from any button class to create the style,
+  /// regardless of what [ColorPickerActionButtonType] is used. Prefer
+  /// however to use matching button types and styles for easier to reason
+  /// about results.
+  ///
+  /// If null, the button uses the default theme styling.
+  ///
+  /// Example:
+  /// ```dart
+  /// dialogCancelButtonStyle: TextButton.styleFrom(
+  ///   foregroundColor: Colors.white,
+  ///   backgroundColor: Colors.red,
+  /// )
+  /// ```
+  final ButtonStyle? dialogCancelButtonStyle;
+
   /// Color picker dialog OK button label.
   ///
   /// Label shown on bottom action button for selecting the current color in
@@ -266,6 +309,35 @@ class ColorPickerActionButtons with Diagnosticable {
   /// Defaults to [ColorPickerActionButtonType.text] resulting in [TextButton].
   final ColorPickerActionButtonType dialogOkButtonType;
 
+  /// Optional custom [ButtonStyle] for the OK button.
+  ///
+  /// If provided, this style will be applied to the OK button, allowing
+  /// full customization of its appearance including foreground color,
+  /// background color, padding, elevation, shape, and more.
+  ///
+  /// This style will override the default theme styling for the button type.
+  /// You can use [TextButton.styleFrom], [OutlinedButton.styleFrom],
+  /// [ElevatedButton.styleFrom], [FilledButton.styleFrom], etc. to create
+  /// the style easily.
+  ///
+  /// The [dialogOkButtonType] controls which button class is used. Just
+  /// like on the button types, you can use a raw [ButtonStyle] or any of
+  /// the `.styleFrom` factories from any button class to create the style,
+  /// regardless of what [ColorPickerActionButtonType] is used. Prefer
+  /// however to use matching button types and styles for easier to reason
+  /// about results.
+  ///
+  /// If null, the button uses the default theme styling.
+  ///
+  /// Example:
+  /// ```dart
+  /// dialogOkButtonStyle: ElevatedButton.styleFrom(
+  ///   foregroundColor: Colors.white,
+  ///   backgroundColor: Colors.blue,
+  /// )
+  /// ```
+  final ButtonStyle? dialogOkButtonStyle;
+
   /// The `useRootNavigator` argument is used to determine whether to push the
   /// ColorPicker dialog to the [Navigator] furthest from or nearest to the
   /// given `context`.
@@ -274,8 +346,8 @@ class ColorPickerActionButtons with Diagnosticable {
   /// by build of ColorPicker dialogs are on the root.
   ///
   /// This setting was moved here in version 2.1.0 in order to make the
-  /// property accessible by Navigator pop functions both in the ColorPicker
-  /// widget itself, as well as built-in dialogs that uses the ColorPicker.
+  /// property accessible via Navigator pop functions both in the ColorPicker
+  /// widget itself, as well as built-in dialogs that use the ColorPicker.
   final bool useRootNavigator;
 
   /// Copy the object with one or more provided properties changed.
@@ -295,12 +367,15 @@ class ColorPickerActionButtons with Diagnosticable {
     double? splashRadius,
     BoxConstraints? constraints,
     bool? dialogActionButtons,
+    bool? dialogActionOnlyOkButton,
     ColorPickerActionButtonOrder? dialogActionOrder,
     bool? dialogActionIcons,
     String? dialogCancelButtonLabel,
     ColorPickerActionButtonType? dialogCancelButtonType,
+    ButtonStyle? dialogCancelButtonStyle,
     String? dialogOkButtonLabel,
     ColorPickerActionButtonType? dialogOkButtonType,
+    ButtonStyle? dialogOkButtonStyle,
     bool? useRootNavigator,
   }) {
     return ColorPickerActionButtons(
@@ -319,14 +394,15 @@ class ColorPickerActionButtons with Diagnosticable {
       splashRadius: splashRadius ?? this.splashRadius,
       constraints: constraints ?? this.constraints,
       dialogActionButtons: dialogActionButtons ?? this.dialogActionButtons,
+      dialogActionOnlyOkButton: dialogActionOnlyOkButton ?? this.dialogActionOnlyOkButton,
       dialogActionOrder: dialogActionOrder ?? this.dialogActionOrder,
       dialogActionIcons: dialogActionIcons ?? this.dialogActionIcons,
-      dialogCancelButtonLabel:
-          dialogCancelButtonLabel ?? this.dialogCancelButtonLabel,
-      dialogCancelButtonType:
-          dialogCancelButtonType ?? this.dialogCancelButtonType,
+      dialogCancelButtonLabel: dialogCancelButtonLabel ?? this.dialogCancelButtonLabel,
+      dialogCancelButtonType: dialogCancelButtonType ?? this.dialogCancelButtonType,
+      dialogCancelButtonStyle: dialogCancelButtonStyle ?? this.dialogCancelButtonStyle,
       dialogOkButtonLabel: dialogOkButtonLabel ?? this.dialogOkButtonLabel,
       dialogOkButtonType: dialogOkButtonType ?? this.dialogOkButtonType,
+      dialogOkButtonStyle: dialogOkButtonStyle ?? this.dialogOkButtonStyle,
       useRootNavigator: useRootNavigator ?? this.useRootNavigator,
     );
   }
@@ -352,40 +428,46 @@ class ColorPickerActionButtons with Diagnosticable {
         splashRadius == other.splashRadius &&
         constraints == other.constraints &&
         dialogActionButtons == other.dialogActionButtons &&
+        dialogActionOnlyOkButton == other.dialogActionOnlyOkButton &&
         dialogActionOrder == other.dialogActionOrder &&
         dialogActionIcons == other.dialogActionIcons &&
         dialogCancelButtonLabel == other.dialogCancelButtonLabel &&
         dialogCancelButtonType == other.dialogCancelButtonType &&
+        dialogCancelButtonStyle == other.dialogCancelButtonStyle &&
         dialogOkButtonLabel == other.dialogOkButtonLabel &&
         dialogOkButtonType == other.dialogOkButtonType &&
+        dialogOkButtonStyle == other.dialogOkButtonStyle &&
         useRootNavigator == other.useRootNavigator;
   }
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
-        okButton,
-        closeButton,
-        okIcon,
-        closeIcon,
-        closeIsLast,
-        okTooltip,
-        closeTooltip,
-        closeTooltipIsClose,
-        toolIconsThemeData,
-        visualDensity,
-        padding,
-        alignment,
-        splashRadius,
-        constraints,
-        dialogActionButtons,
-        dialogActionOrder,
-        dialogActionIcons,
-        dialogCancelButtonLabel,
-        dialogCancelButtonType,
-        dialogOkButtonLabel,
-        dialogOkButtonType,
-        useRootNavigator,
-      ]);
+    okButton,
+    closeButton,
+    okIcon,
+    closeIcon,
+    closeIsLast,
+    okTooltip,
+    closeTooltip,
+    closeTooltipIsClose,
+    toolIconsThemeData,
+    visualDensity,
+    padding,
+    alignment,
+    splashRadius,
+    constraints,
+    dialogActionButtons,
+    dialogActionOnlyOkButton,
+    dialogActionOrder,
+    dialogActionIcons,
+    dialogCancelButtonLabel,
+    dialogCancelButtonType,
+    dialogCancelButtonStyle,
+    dialogOkButtonLabel,
+    dialogOkButtonType,
+    dialogOkButtonStyle,
+    useRootNavigator,
+  ]);
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -397,31 +479,22 @@ class ColorPickerActionButtons with Diagnosticable {
     properties.add(DiagnosticsProperty<bool>('closeIsLast', closeIsLast));
     properties.add(StringProperty('okTooltip', okTooltip));
     properties.add(StringProperty('closeTooltip', closeTooltip));
-    properties.add(
-        DiagnosticsProperty<bool>('closeTooltipIsClose', closeTooltipIsClose));
-    properties.add(DiagnosticsProperty<IconThemeData?>(
-        'toolIconsThemeData', toolIconsThemeData));
-    properties.add(
-        DiagnosticsProperty<VisualDensity?>('visualDensity', visualDensity));
-    properties
-        .add(DiagnosticsProperty<AlignmentGeometry>('alignment', alignment));
+    properties.add(DiagnosticsProperty<bool>('closeTooltipIsClose', closeTooltipIsClose));
+    properties.add(DiagnosticsProperty<IconThemeData?>('toolIconsThemeData', toolIconsThemeData));
+    properties.add(DiagnosticsProperty<VisualDensity?>('visualDensity', visualDensity));
+    properties.add(DiagnosticsProperty<AlignmentGeometry>('alignment', alignment));
     properties.add(DoubleProperty('splashRadius', splashRadius));
-    properties
-        .add(DiagnosticsProperty<BoxConstraints?>('constraints', constraints));
-    properties.add(
-        DiagnosticsProperty<bool>('dialogActionButtons', dialogActionButtons));
-    properties.add(EnumProperty<ColorPickerActionButtonOrder>(
-        'dialogActionOrder', dialogActionOrder));
-    properties
-        .add(DiagnosticsProperty<bool>('dialogActionIcons', dialogActionIcons));
-    properties.add(
-        StringProperty('dialogCancelButtonLabel', dialogCancelButtonLabel));
-    properties.add(EnumProperty<ColorPickerActionButtonType>(
-        'dialogCancelButtonType', dialogCancelButtonType));
+    properties.add(DiagnosticsProperty<BoxConstraints?>('constraints', constraints));
+    properties.add(DiagnosticsProperty<bool>('dialogActionButtons', dialogActionButtons));
+    properties.add(DiagnosticsProperty<bool>('dialogActionOnlyOkButton', dialogActionOnlyOkButton));
+    properties.add(EnumProperty<ColorPickerActionButtonOrder>('dialogActionOrder', dialogActionOrder));
+    properties.add(DiagnosticsProperty<bool>('dialogActionIcons', dialogActionIcons));
+    properties.add(StringProperty('dialogCancelButtonLabel', dialogCancelButtonLabel));
+    properties.add(EnumProperty<ColorPickerActionButtonType>('dialogCancelButtonType', dialogCancelButtonType));
+    properties.add(DiagnosticsProperty<ButtonStyle?>('dialogCancelButtonStyle', dialogCancelButtonStyle));
     properties.add(StringProperty('dialogOkButtonLabel', dialogOkButtonLabel));
-    properties.add(EnumProperty<ColorPickerActionButtonType>(
-        'dialogOkButtonType', dialogOkButtonType));
-    properties
-        .add(DiagnosticsProperty<bool>('useRootNavigator', useRootNavigator));
+    properties.add(EnumProperty<ColorPickerActionButtonType>('dialogOkButtonType', dialogOkButtonType));
+    properties.add(DiagnosticsProperty<ButtonStyle?>('dialogOkButtonStyle', dialogOkButtonStyle));
+    properties.add(DiagnosticsProperty<bool>('useRootNavigator', useRootNavigator));
   }
 }

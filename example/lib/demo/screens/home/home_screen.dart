@@ -1,19 +1,19 @@
+import 'package:color_picker_example/demo/screens/color_picker/color_picker_screen.dart';
+import 'package:color_picker_example/demo/screens/color_picker/picker_toggle_buttons/theme_mode_switch.dart';
+import 'package:color_picker_example/demo/screens/home/reset_settings_button.dart';
+import 'package:color_picker_example/demo/utils/app.dart';
+import 'package:color_picker_example/demo/utils/theme.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import '../../utils/app.dart';
-import '../../utils/theme.dart';
-import '../color_picker/color_picker_screen.dart';
-import '../color_picker/picker_toggle_buttons/theme_mode_switch.dart';
-import 'reset_settings_button.dart';
+import 'package:material_ui/material_ui.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final bool isLight = Theme.of(context).brightness == Brightness.light;
+    final ThemeData theme = Theme.of(context);
+    final bool isLight = theme.brightness == Brightness.light;
     // Use annotated region to style the status bar when there is no
     // AppBar and also style system navigation bar.
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -24,7 +24,7 @@ class HomeScreen extends StatelessWidget {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(height: MediaQuery.of(context).padding.top),
+            SizedBox(height: MediaQuery.paddingOf(context).top),
             const Spacer(),
             Text(
               App.appName,
@@ -39,14 +39,14 @@ class HomeScreen extends StatelessWidget {
                   width: 60,
                   borderRadius: 8,
                   elevation: 4,
-                  color: Colors.blueAccent[200]!,
+                  color: Colors.blueAccent.shade200,
                   isSelected: true,
                 ),
                 const SizedBox(width: 16),
                 ColorIndicator(
                   height: 60,
                   width: 60,
-                  color: Colors.blue[100]!,
+                  color: Colors.blue.shade100,
                   hasBorder: true,
                 ),
                 const SizedBox(width: 16),
@@ -55,7 +55,7 @@ class HomeScreen extends StatelessWidget {
                   width: 60,
                   borderRadius: 30,
                   elevation: 8,
-                  color: Colors.indigo[600]!,
+                  color: Colors.indigo.shade600,
                 ),
               ],
             ),
@@ -68,14 +68,14 @@ class HomeScreen extends StatelessWidget {
                   width: 60,
                   borderRadius: 30,
                   elevation: 9,
-                  color: Colors.red[800]!,
+                  color: Colors.red.shade800,
                 ),
                 const SizedBox(width: 16),
                 ColorIndicator(
                   height: 60,
                   width: 60,
                   borderRadius: 0,
-                  color: Colors.redAccent[100]!,
+                  color: Colors.redAccent.shade100,
                   hasBorder: true,
                 ),
                 const SizedBox(width: 16),
@@ -84,7 +84,7 @@ class HomeScreen extends StatelessWidget {
                   width: 60,
                   borderRadius: 16,
                   elevation: 5,
-                  color: Colors.pink[800]!,
+                  color: Colors.pink.shade800,
                   isSelected: true,
                 ),
               ],
@@ -98,7 +98,7 @@ class HomeScreen extends StatelessWidget {
                   width: 60,
                   borderRadius: 4,
                   elevation: 1,
-                  color: Colors.amber[400]!,
+                  color: Colors.amber.shade400,
                 ),
                 const SizedBox(width: 16),
                 ColorIndicator(
@@ -106,14 +106,14 @@ class HomeScreen extends StatelessWidget {
                   width: 60,
                   borderRadius: 30,
                   elevation: 1,
-                  color: Colors.orange[300]!,
+                  color: Colors.orange.shade300,
                   isSelected: true,
                 ),
                 const SizedBox(width: 16),
                 ColorIndicator(
                   height: 60,
                   width: 60,
-                  color: Colors.amber[800]!,
+                  color: Colors.amber.shade800,
                 ),
               ],
             ),
@@ -124,8 +124,7 @@ class HomeScreen extends StatelessWidget {
                 Navigator.push<Object>(
                   context,
                   MaterialPageRoute<Object>(
-                    builder: (BuildContext context) =>
-                        const ColorPickerScreen(),
+                    builder: (BuildContext context) => const ColorPickerScreen(),
                   ),
                 );
               },
@@ -133,7 +132,7 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(7),
                 child: Text(
                   'Try the color picker',
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: theme.textTheme.titleLarge,
                 ),
               ),
             ),
@@ -152,11 +151,11 @@ class HomeScreen extends StatelessWidget {
             const Spacer(),
             Text(
               'Using flex_color_picker version ${App.version}',
-              style: Theme.of(context).textTheme.bodySmall,
+              style: theme.textTheme.bodySmall,
             ),
             Text(
               'Web build with Flutter ${App.flutterVersion}',
-              style: Theme.of(context).textTheme.bodySmall,
+              style: theme.textTheme.bodySmall,
             ),
             const SizedBox(height: 10),
           ],

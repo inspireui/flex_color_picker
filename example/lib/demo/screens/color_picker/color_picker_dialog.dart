@@ -1,21 +1,18 @@
+import 'package:color_picker_example/demo/pods/pods.dart';
+import 'package:color_picker_example/demo/utils/app.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../pods/pods.dart';
-import '../../utils/app.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The ColorPicker shown in a dialog that is opened from the ColorPickerScreen.
 Future<bool> colorPickerDialog(
   BuildContext context,
   WidgetRef ref, {
   bool cardRemote = false,
-}) async {
-  final ColorScheme colorScheme = Theme.of(context).colorScheme;
+}) {
+  final ThemeData theme = Theme.of(context);
   return ColorPicker(
-    color: cardRemote
-        ? ref.watch(cardPickerColorPod)
-        : ref.watch(dialogPickerColorPod),
+    color: cardRemote ? ref.watch(cardPickerColorPod) : ref.watch(dialogPickerColorPod),
     onColorChangeStart: (Color color) {
       ref.read(onColorChangeStartPod.notifier).state = color;
     },
@@ -38,6 +35,7 @@ Future<bool> colorPickerDialog(
     enableShadesSelection: ref.watch(enableShadesSelectionPod),
     includeIndex850: ref.watch(includeIndex850Pod),
     enableTonalPalette: ref.watch(enableTonesSelectionPod),
+    tonalPaletteFixedMinChroma: ref.watch(tonalPaletteFixedMinChromaPod),
     enableOpacity: ref.watch(enableOpacityPod),
     opacityTrackHeight: ref.watch(opacityTrackHeightPod),
     opacityTrackWidth: ref.watch(opacityTrackWidthPod),
@@ -52,8 +50,7 @@ Future<bool> colorPickerDialog(
       longPressMenu: ref.watch(longPressMenuPod),
       secondaryMenu: ref.watch(secondaryMenuPod),
       secondaryOnDesktopLongOnDevice: ref.watch(secondaryDesktopOtherLongPod),
-      secondaryOnDesktopLongOnDeviceAndWeb:
-          ref.watch(secondaryDesktopWebLongPod),
+      secondaryOnDesktopLongOnDeviceAndWeb: ref.watch(secondaryDesktopWebLongPod),
       editFieldCopyButton: ref.watch(editFieldCopyButtonPod),
       parseShortHexCode: ref.watch(parseShortHexCodePod),
       editUsesParsedPaste: ref.watch(editUsesParsedPastePod),
@@ -67,19 +64,22 @@ Future<bool> colorPickerDialog(
       closeButton: ref.watch(closeButtonPod),
       closeIsLast: ref.watch(closeIsLastPod),
       dialogActionButtons: ref.watch(dialogActionButtonsPod),
+      dialogActionOnlyOkButton: ref.watch(dialogActionOnlyOkButtonPod),
       dialogActionOrder: ref.watch(dialogActionsOrderPod),
       dialogActionIcons: ref.watch(dialogActionIconsPod),
-      dialogOkButtonType: ColorPickerActionButtonType.outlined,
-      dialogCancelButtonType: ColorPickerActionButtonType.text,
+      dialogOkButtonType: ColorPickerActionButtonType.filled,
+      dialogCancelButtonType: ColorPickerActionButtonType.filledTonal,
     ),
     width: ref.watch(sizePod),
     height: ref.watch(sizePod),
+    tonalColorSameSize: ref.watch(tonalSameSizePod),
     spacing: ref.watch(spacingPod),
     runSpacing: ref.watch(runSpacingPod),
     elevation: ref.watch(elevationPod),
     hasBorder: ref.watch(hasBorderPod),
     borderRadius: ref.watch(borderRadiusPod),
     columnSpacing: ref.watch(columnSpacingPod),
+    toolbarSpacing: 0,
     wheelDiameter: ref.watch(wheelDiameterPod),
     wheelWidth: ref.watch(wheelWidthPod),
     wheelHasBorder: ref.watch(wheelHasBorderPod),
@@ -87,67 +87,71 @@ Future<bool> colorPickerDialog(
     wheelSquareBorderRadius: ref.watch(wheelSquareBorderRadiusPod),
     enableTooltips: ref.watch(enableTooltipsPod),
     pickersEnabled: ref.watch(pickersEnabledPod),
-    selectedPickerTypeColor: colorScheme.primary,
+    pickerTypeLabels: const <ColorPickerType, String>{
+      ColorPickerType.both: 'P & A',
+      ColorPickerType.bw: 'B & W',
+    },
+    selectedPickerTypeColor: theme.colorScheme.primary,
     title: ref.watch(showTitlePod)
         ? Text(
             'ColorPicker',
-            style: Theme.of(context).textTheme.titleLarge,
+            style: theme.textTheme.titleLarge,
           )
         : null,
     heading: ref.watch(showHeadingPod)
         ? Text(
             'Select color',
-            style: Theme.of(context).textTheme.headlineSmall,
+            style: theme.textTheme.headlineSmall,
           )
         : null,
     subheading: ref.watch(showSubheadingPod)
         ? Text(
             'Select color shade',
-            style: Theme.of(context).textTheme.titleMedium,
+            style: theme.textTheme.titleMedium,
           )
         : null,
     tonalSubheading: ref.watch(showTonalSubheadingPod)
         ? Text(
             'Material 3 tonal palette',
-            style: Theme.of(context).textTheme.titleMedium,
+            style: theme.textTheme.titleMedium,
           )
         : null,
     wheelSubheading: ref.watch(showSubheadingPod)
         ? Text(
             'Selected color and its color swatch',
-            style: Theme.of(context).textTheme.titleMedium,
+            style: theme.textTheme.titleMedium,
           )
         : null,
     opacitySubheading: ref.watch(showOpacitySubheadingPod)
         ? Text(
             'Opacity',
-            style: Theme.of(context).textTheme.titleMedium,
+            style: theme.textTheme.titleMedium,
           )
         : null,
     recentColorsSubheading: ref.watch(showRecentSubheadingPod)
         ? Text(
             'Recent colors',
-            style: Theme.of(context).textTheme.titleMedium,
+            style: theme.textTheme.titleMedium,
           )
         : null,
     showMaterialName: ref.watch(showMaterialNamePod),
     showColorName: ref.watch(showColorNamePod),
     showColorCode: ref.watch(showColorCodePod),
+    showEditIconButton: ref.watch(showEditIconButtonPod),
     colorCodeHasColor: ref.watch(colorCodeHasColorPod),
+    focusedEditHasNoColor: ref.watch(focusedEditHasNoColorPod),
     colorCodeReadOnly: ref.watch(colorCodeReadOnlyPod),
     showColorValue: ref.watch(showColorValuePod),
     showRecentColors: ref.watch(showRecentColorsPod),
-    recentColors: cardRemote
-        ? ref.watch(cardRecentColorsPod)
-        : ref.watch(dialogRecentColorsPod),
+    recentColors: cardRemote ? ref.watch(cardRecentColorsPod) : ref.watch(dialogRecentColorsPod),
     maxRecentColors: cardRemote ? 8 : 5,
     customColorSwatchesAndNames: App.colorsNameMap,
+    customSecondaryColorSwatchesAndNames: App.colorsOptionsMap,
   ).showPickerDialog(
     context,
     elevation: 2,
     // Let's make an even more transparent barrier color than black12
     barrierColor: const Color(0x33000000), // 6% opacity black
-    constraints:
-        const BoxConstraints(minHeight: 580, minWidth: 480, maxWidth: 480),
+    constraints: const BoxConstraints(minHeight: 580, minWidth: 480, maxWidth: 480),
   );
 }
